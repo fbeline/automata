@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.24)
 project(automata)
 set(CMAKE_C_STANDARD 99)
-# set(CMAKE_CXX_STANDARD 17)
+
+find_package(Lua REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(automata src/main.c)
+
+target_include_directories(automata PRIVATE ${LUA_INCLUDE_DIR})
+target_link_libraries(automata PRIVATE ${LUA_LIBRARIES})

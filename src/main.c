@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <winuser.h>
+#include <lua.h>
 
 typedef struct action {
   WORD pressedKey;
