@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include <winuser.h>
 #include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 
 typedef struct action {
   WORD pressedKey;
@@ -12,6 +14,7 @@ typedef struct action {
 Action *action;
 unsigned int actionCount = 0;
 HHOOK keyboardHook;
+lua_State* L;
 
 void pressKey(WORD keyCode) {
   INPUT input = {0};
@@ -34,11 +37,17 @@ void releaseKey(WORD keyCode) {
 DWORD WINAPI ExecCommand(LPVOID lpParam) {
   Action *a = (Action*)lpParam;
 
-  for (int i = 0; i < strlen(a->command); i++) {
-    pressKey(a->command[i]);
-    Sleep(50);
-    releaseKey(a->command[i]);
+  lua_getglobal(L, "ab");
+  if (lua_isfunction(L, -1)) {
+    printf("running lua function\n");
+    lua_pcall(L, 0, 0, 0);
   }
+
+  /* for (int i = 0; i < strlen(a->command); i++) { */
+  /*   pressKey(a->command[i]); */
+  /*   Sleep(50); */
+  /*   releaseKey(a->command[i]); */
+  /* } */
 
   return 0;
 }
@@ -74,14 +83,49 @@ void Setup() {
   actionCount = 2;
 }
 
+int luaWait(lua_State* L) {
+  lua_Number n = lua_tonumber(L, -1);
+  Sleep(n);
+  return 0;
+}
+
+int luaPressKey(lua_State* L) {
+  lua_Number keyCode = lua_tonumber(L, -1);
+  pressKey(keyCode);
+  return 0;
+}
+
+int luaReleaseKey(lua_State* L) {
+  lua_Number keyCode = lua_tonumber(L, -1);
+  releaseKey(keyCode);
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
   Setup();
-
   keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
   if (keyboardHook == NULL) {
     printf("Failed to set keyboard hook\n");
     return 1;
   }
+
+  L = luaL_newstate();
+  // expose functions to lua
+  lua_pushcfunction(L, luaWait);
+  lua_setglobal(L, "wait");
+
+  lua_pushcfunction(L, luaPressKey);
+  lua_setglobal(L, "press_key");
+
+  lua_pushcfunction(L, luaReleaseKey);
+  lua_setglobal(L, "release_key");
+
+  luaL_openlibs(L);
+  if (luaL_dofile(L, "test.lua") != LUA_OK) {
+    perror("[perror]=");
+    luaL_error(L, "[LUA ERROR]= %s\n", lua_tostring(L, -1));
+    exit(1);
+  } 
 
   MSG msg;
   while (GetMessage(&msg, NULL, 0, 0)) {
@@ -91,5 +135,6 @@ int main(int argc, char *argv[]) {
 
   // Unhook the keyboard hook before exiting
   UnhookWindowsHookEx(keyboardHook);
+  lua_close(L);
   return 0;
 }
