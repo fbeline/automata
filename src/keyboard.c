@@ -1,26 +1,26 @@
 #include "keyboard.h"
 
+#include <stdio.h>
+
 static HHOOK keyboardHook;
+static Action *action;
+static size_t actionCount = 0;
 
-DWORD WINAPI ExecCommand(LPVOID lpParam) {
-  Action *a = (Action*)lpParam;
+static LPTHREAD_START_ROUTINE CommandRoutine;
 
-  lua_getglobal(L, a->command);
-  if (lua_isfunction(L, -1)) {
-    lua_pcall(L, 0, 0, 0);
-  }
-
-  return 0;
+void KeyboardSetAction(Action* act, size_t size) {
+  actionCount = size;
+  action = act;
 }
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode >= 0) {
     if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
       KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
-      /* printf("Key pressed: %lu\n", kbdStruct->vkCode); */
+      printf("Key pressed: %lu\n", kbdStruct->vkCode);
       for (unsigned int i = 0; i < actionCount; i++) {
         if (action[i].valid && kbdStruct->vkCode == action[i].pressedKey) {
-          HANDLE hThread = CreateThread(NULL, 0, ExecCommand, &action[i], 0, NULL);
+          HANDLE hThread = CreateThread(NULL, 0, CommandRoutine, &action[i], 0, NULL);
           if (hThread == NULL) {
             printf("[Error]: Failed to run action.\n");
             return 1;
@@ -51,10 +51,16 @@ void ReleaseKey(WORD keyCode) {
   SendInput(1, &input, sizeof(INPUT));
 }
 
-void SetupKeyboardHook() {
+void KeyboardHookSetup(LPTHREAD_START_ROUTINE commandRoutine) {
   keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
   if (keyboardHook == NULL) {
     printf("Failed to set keyboard hook\n");
     exit(1);
   }
+
+  CommandRoutine = commandRoutine;
+}
+
+void KeyboardUnhook(void) {
+  UnhookWindowsHookEx(keyboardHook);
 }

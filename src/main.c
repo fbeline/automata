@@ -6,17 +6,25 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+#include "types.h"
 #include "keyboard.h"
 #include "lua_bridge.h"
 
-// Global variables
-Action *action;
-size_t actionCount = 0;
-HHOOK keyboardHook;
+DWORD WINAPI Execute(LPVOID lpParam) {
+  Action *a = (Action*)lpParam;
+  printf("[debug] = LUA COMMAND: %s\n", a->command);
+  LuaPcall(a->command);
+  return 0;
+}
 
 int main(int argc, char *argv[]) {
+  size_t actionCount = 0;
+
   LuaInitState();
-  LuaSetupActions(action, &actionCount);
+  Action *action = LuaSetupActions(&actionCount);
+
+  KeyboardHookSetup(Execute);
+  KeyboardSetAction(action, actionCount);
 
   MSG msg;
   while (GetMessage(&msg, NULL, 0, 0)) {
@@ -24,8 +32,7 @@ int main(int argc, char *argv[]) {
     DispatchMessage(&msg);
   }
 
-  // Unhook the keyboard hook before exiting
   LuaClose();
-  UnhookWindowsHookEx(keyboardHook);
+  KeyboardUnhook();
   return 0;
 }

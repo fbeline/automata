@@ -1,17 +1,12 @@
 #pragma once
 
-#include <stdbool.h>
 #include <Windows.h>
 #include <winuser.h>
-
-typedef struct action {
-  WORD pressedKey;
-  char *command;
-  bool valid;
-} Action;
+#include "types.h"
 
 void PressKey(WORD keyCode);
 void ReleaseKey(WORD keyCode);
 
-void SetupKeyboardHook();
-LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
+void KeyboardHookSetup(LPTHREAD_START_ROUTINE commandRoutine);
+void KeyboardSetAction(Action* action, size_t size);
+void KeyboardUnhook(void);

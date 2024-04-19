@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <windows.h>
+#include "keyboard.h"
 
 lua_State* L;
 
@@ -14,13 +16,13 @@ int LuaWait(lua_State* L) {
 
 int LuaPressKey(lua_State* L) {
   lua_Number keyCode = lua_tonumber(L, -1);
-  pressKey(keyCode);
+  PressKey(keyCode);
   return 0;
 }
 
 int LuaReleaseKey(lua_State* L) {
   lua_Number keyCode = lua_tonumber(L, -1);
-  releaseKey(keyCode);
+  ReleaseKey(keyCode);
   return 0;
 }
 
@@ -51,9 +53,9 @@ void LuaInitState() {
   }
 }
 
-void LuaSetupActions(Action* action, size_t *size) {
+Action* LuaSetupActions(size_t *size) {
   *size = lua_rawlen(L, -1);
-  action = (Action*)malloc(*size * sizeof(Action));
+  Action* action = (Action*)malloc(*size * sizeof(Action));
 
   for (int i = 0; i < *size; i++) {
     action[i].valid = false;
@@ -84,8 +86,18 @@ void LuaSetupActions(Action* action, size_t *size) {
 
     action[i].valid = true;
   }
+
+  return action;
+}
+
+void LuaPcall(const char* fnName) {
+  lua_getglobal(L, fnName);
+  if (lua_isfunction(L, -1)) {
+    lua_pcall(L, 0, 0, 0);
+  }
 }
 
 void LuaClose() {
   lua_close(L);
 }
+

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <lua.h>
-#include "keyboard.h"
+#include "types.h"
 
 void LuaInitState();
 
-void LuaSetupActions(Action* action, size_t *size);
+Action* LuaSetupActions(size_t *size);
 
 void LuaClose();
+
+void LuaPcall(const char* fnName);
