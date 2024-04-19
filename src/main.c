@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <Windows.h>
 #include <winuser.h>
 #include <lua.h>
@@ -8,6 +9,7 @@
 typedef struct action {
   WORD pressedKey;
   char *command;
+  bool valid;
 } Action;
 
 // Global variables
@@ -37,17 +39,10 @@ void releaseKey(WORD keyCode) {
 DWORD WINAPI ExecCommand(LPVOID lpParam) {
   Action *a = (Action*)lpParam;
 
-  lua_getglobal(L, "ab");
+  lua_getglobal(L, a->command);
   if (lua_isfunction(L, -1)) {
-    printf("running lua function\n");
     lua_pcall(L, 0, 0, 0);
   }
-
-  /* for (int i = 0; i < strlen(a->command); i++) { */
-  /*   pressKey(a->command[i]); */
-  /*   Sleep(50); */
-  /*   releaseKey(a->command[i]); */
-  /* } */
 
   return 0;
 }
@@ -56,9 +51,9 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode >= 0) {
     if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
       KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
-      printf("Key pressed: %lu\n", kbdStruct->vkCode);
+      /* printf("Key pressed: %lu\n", kbdStruct->vkCode); */
       for (unsigned int i = 0; i < actionCount; i++) {
-        if (kbdStruct->vkCode == action[i].pressedKey) {
+        if (action[i].valid && kbdStruct->vkCode == action[i].pressedKey) {
           HANDLE hThread = CreateThread(NULL, 0, ExecCommand, &action[i], 0, NULL);
           if (hThread == NULL) {
             printf("[Error]: Failed to run action.\n");
@@ -126,6 +121,46 @@ int main(int argc, char *argv[]) {
     luaL_error(L, "[LUA ERROR]= %s\n", lua_tostring(L, -1));
     exit(1);
   } 
+  
+  lua_getglobal(L, "actions");
+  if (!lua_istable(L, -1)) {
+    printf("Error: Missing 'actions' definition.");
+    lua_close(L);
+    exit(1);
+  }
+  
+  int actionsSize = lua_rawlen(L, -1);
+  action = (Action*)malloc(actionsSize * sizeof(Action));
+
+  for (int i = 0; i < actionsSize; i++) {
+    action[i].valid = false;
+    lua_rawgeti(L, -1, i + 1);
+    if (!lua_istable(L, -1)) {
+      printf("Error: element %d is not a table\n", i);
+      lua_pop(L, 1);
+      continue;
+    }
+
+    lua_getfield(L, -1, "keycode");
+    if (!lua_isnumber(L, -1)) {
+      printf("Error: element %d with invalid keycode\n", i);
+      lua_pop(L, 2);
+      continue;
+    }
+    action[i].pressedKey = lua_tonumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, -1, "action");
+    if (!lua_isstring(L, -1)) {
+      printf("Error: element %d action must be a string\n", i);
+      lua_pop(L, 2);
+      continue;
+    }
+    action[i].command = _strdup(lua_tostring(L, -1));
+    lua_pop(L, 2);
+
+    action[i].valid = true;
+  }
 
   MSG msg;
   while (GetMessage(&msg, NULL, 0, 0)) {
