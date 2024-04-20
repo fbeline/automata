@@ -7,6 +7,7 @@
 #include <lauxlib.h>
 
 #include "types.h"
+#include "action.h"
 #include "ui.h"
 #include "keyboard.h"
 #include "lua_bridge.h"
@@ -22,14 +23,14 @@ int main(int argc, char *argv[]) {
   size_t actionCount = 0;
 
   LuaInitState();
-  Action *action = LuaSetupActions(&actionCount);
-
+  ActionSetup();
   KeyboardHookSetup(Execute);
-  KeyboardSetAction(action, actionCount);
 
   UiStart();
 
-  LuaClose();
+  FreeActions();
   KeyboardUnhook();
+  LuaClose();
+
   return 0;
 }

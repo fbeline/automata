@@ -1,6 +1,7 @@
 #include "ui.h"
 
 #include <windows.h>
+#include "action.h"
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAYICON 1
@@ -49,7 +50,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           PostQuitMessage(0);
           break;
         case IDM_RELOAD:
-          MessageBox(hwnd, "Reload command clicked", "Info", MB_OK | MB_ICONINFORMATION);
+          ActionReload();
           break;
       }
       break;

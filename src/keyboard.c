@@ -1,17 +1,11 @@
 #include "keyboard.h"
 
 #include <stdio.h>
+#include "action.h"
 
 static HHOOK keyboardHook;
-static Action *action;
-static size_t actionCount = 0;
 
 static LPTHREAD_START_ROUTINE CommandRoutine;
-
-void KeyboardSetAction(Action* act, size_t size) {
-  actionCount = size;
-  action = act;
-}
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode >= 0) {
