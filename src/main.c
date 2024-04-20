@@ -7,6 +7,7 @@
 #include <lauxlib.h>
 
 #include "types.h"
+#include "ui.h"
 #include "keyboard.h"
 #include "lua_bridge.h"
 
@@ -26,11 +27,7 @@ int main(int argc, char *argv[]) {
   KeyboardHookSetup(Execute);
   KeyboardSetAction(action, actionCount);
 
-  MSG msg;
-  while (GetMessage(&msg, NULL, 0, 0)) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
+  UiStart();
 
   LuaClose();
   KeyboardUnhook();
