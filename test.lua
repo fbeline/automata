@@ -19,6 +19,6 @@ function cd()
 end
 
 actions = {
-  { keycode = 113, action = "ab" },
-  { keycode = 114, action = "cd" }
+  { keycode = VK_F1, action = "ab" },
+  { keycode = VK_F2, action = "cd" }
 }
