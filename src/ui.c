@@ -1,5 +1,6 @@
 #include "ui.h"
 
+#include <stdio.h>
 #include <windows.h>
 #include "action.h"
 
@@ -7,6 +8,7 @@
 #define ID_TRAYICON 1
 #define IDM_EXIT 1001
 #define IDM_RELOAD 1002
+#define IDM_LOG 1003
 
 HWND hwndGlobal;
 NOTIFYICONDATA nid;
@@ -35,6 +37,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           GetCursorPos(&pt);
           HMENU hMenu = CreatePopupMenu();
           AppendMenu(hMenu, MF_STRING, IDM_RELOAD, "Reload");
+          AppendMenu(hMenu, MF_STRING, IDM_LOG, "Log");
           AppendMenu(hMenu, MF_STRING, IDM_EXIT, "Exit");
           SetForegroundWindow(hwnd);
           TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
@@ -51,6 +54,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           break;
         case IDM_RELOAD:
           ActionReload();
+          break;
+        case IDM_LOG:
+          fflush(stdout);
+          ShellExecute(NULL, "open", "notepad.exe", "automata.log", NULL, SW_SHOWDEFAULT);
           break;
       }
       break;

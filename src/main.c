@@ -20,7 +20,11 @@ DWORD WINAPI Execute(LPVOID lpParam) {
 }
 
 int main(int argc, char *argv[]) {
-  size_t actionCount = 0;
+  FILE* logFile = freopen("automata.log", "a", stdout);
+  if (logFile == NULL) {
+    printf("Error opening log file.");
+    return 1;
+  }
 
   LuaInitState();
   ActionSetup();
@@ -31,6 +35,7 @@ int main(int argc, char *argv[]) {
   FreeActions();
   KeyboardUnhook();
   LuaClose();
+  fclose(logFile);
 
   return 0;
 }

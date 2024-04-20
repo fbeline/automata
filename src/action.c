@@ -21,10 +21,10 @@ void FreeActions(void) {
 }
 
 void ActionReload(void) {
-  printf("[info] Atuomata reloading...\n");
+  printf("[info] Automata reloading...\n");
   FreeActions();
   LuaClose();
   LuaInitState();
   ActionSetup();
-  printf("[info] Atuomata reloaded\n");
+  printf("[info] Automata reloaded.\n");
 }
