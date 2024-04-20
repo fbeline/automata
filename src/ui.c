@@ -54,6 +54,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           break;
         case IDM_RELOAD:
           ActionReload();
+          fflush(stdout);
           break;
         case IDM_LOG:
           fflush(stdout);

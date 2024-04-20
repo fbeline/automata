@@ -207,27 +207,36 @@ static void DeclareGlobals(void) {
   DECLARE_KEYCODE(L,VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT);
 }
 
-void LuaInitState() {
+bool LuaInitState(void) {
   L = luaL_newstate();
 
   DeclareGlobals();
 
   luaL_openlibs(L);
   if (luaL_dofile(L, "test.lua") != LUA_OK) {
-    perror("[perror]=");
-    luaL_error(L, "[LUA ERROR]= %s\n", lua_tostring(L, -1));
-    exit(1);
+    printf("[Error]= %s\n", lua_tostring(L, -1));
+    lua_close(L);
+    L = NULL;
+    return false;
   } 
 
   lua_getglobal(L, "actions");
   if (!lua_istable(L, -1)) {
-    printf("Error: Missing 'actions' definition.");
+    printf("[Error]= Missing 'actions' definition.");
     lua_close(L);
-    exit(1);
+    L = NULL;
+    return false;
   }
+
+  return true;
 }
 
 Action* LuaSetupActions(size_t *size) {
+  if (L == NULL) {
+    *size = 0;
+    return NULL;
+  }
+
   *size = lua_rawlen(L, -1);
   Action* action = (Action*)malloc(*size * sizeof(Action));
 
@@ -271,7 +280,9 @@ void LuaPcall(const char* fnName) {
   }
 }
 
-void LuaClose() {
+void LuaClose(void) {
+  if (L == NULL) return;
+
   lua_close(L);
 }
 

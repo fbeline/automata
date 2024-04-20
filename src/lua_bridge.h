@@ -2,11 +2,12 @@
 
 #include <lua.h>
 #include "types.h"
+#include <stdbool.h>
 
-void LuaInitState();
+bool LuaInitState(void);
 
 Action* LuaSetupActions(size_t *size);
 
-void LuaClose();
+void LuaClose(void);
 
 void LuaPcall(const char* fnName);

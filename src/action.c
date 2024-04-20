@@ -12,6 +12,8 @@ void ActionSetup(void) {
 }
 
 void FreeActions(void) {
+  if (actionCount == 0) return;
+
   for (size_t i = 0; i < actionCount; i++) {
     free(action[i].command);
   }
@@ -21,10 +23,10 @@ void FreeActions(void) {
 }
 
 void ActionReload(void) {
-  printf("[info] Automata reloading...\n");
+  printf("[info]= Automata reloading...\n");
   FreeActions();
   LuaClose();
   LuaInitState();
   ActionSetup();
-  printf("[info] Automata reloaded.\n");
+  printf("[info]= Automata reloaded.\n");
 }

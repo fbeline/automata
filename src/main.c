@@ -20,22 +20,24 @@ DWORD WINAPI Execute(LPVOID lpParam) {
 }
 
 int main(int argc, char *argv[]) {
-  FILE* logFile = freopen("automata.log", "a", stdout);
-  if (logFile == NULL) {
-    printf("Error opening log file.");
-    return 1;
-  }
+  /* FILE* logFile = freopen("automata.log", "a", stdout); */
+  /* if (logFile == NULL) { */
+  /*   printf("Error opening log file."); */
+  /*   return 1; */
+  /* } */
 
   LuaInitState();
   ActionSetup();
   KeyboardHookSetup(Execute);
+
+  fflush(stdout);
 
   UiStart();
 
   FreeActions();
   KeyboardUnhook();
   LuaClose();
-  fclose(logFile);
+  /* fclose(logFile); */
 
   return 0;
 }
