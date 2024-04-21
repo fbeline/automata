@@ -6,6 +6,7 @@
 #include <lauxlib.h>
 #include <windows.h>
 #include <winuser.h>
+#include <string.h>
 #include "keyboard.h"
 
 #define DECLARE_KEYCODE(L, keycode) \
@@ -264,7 +265,15 @@ Action* LuaSetupActions(size_t *size) {
       lua_pop(L, 2);
       continue;
     }
-    action[i].command = _strdup(lua_tostring(L, -1));
+
+    const char* command = lua_tostring(L, -1);
+    if (strlen(command) >= CMD_MAX_SIZE) {
+      printf("Error: element %d action name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
+      lua_pop(L, 2);
+      continue;
+    }
+
+    strncpy_s(action[i].command, CMD_MAX_SIZE, command, _TRUNCATE);
     lua_pop(L, 2);
 
     action[i].valid = true;
@@ -276,7 +285,10 @@ Action* LuaSetupActions(size_t *size) {
 void LuaPcall(const char* fnName) {
   lua_getglobal(L, fnName);
   if (lua_isfunction(L, -1)) {
+    printf("[Info]= Executing %s...\n", fnName);
     lua_pcall(L, 0, 0, 0);
+  } else {
+    printf("[Error]= Command not found: %s\n", fnName);
   }
 }
 

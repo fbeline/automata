@@ -31,7 +31,7 @@ void PressKey(WORD keyCode) {
   INPUT input = {0};
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode;
-  input.ki.dwFlags = 0; // 0 for key press
+  input.ki.dwFlags = 0;
 
   SendInput(1, &input, sizeof(INPUT));
 }

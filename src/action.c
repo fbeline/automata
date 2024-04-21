@@ -14,9 +14,6 @@ void ActionSetup(void) {
 void FreeActions(void) {
   if (actionCount == 0) return;
 
-  for (size_t i = 0; i < actionCount; i++) {
-    free(action[i].command);
-  }
   free(action);
   actionCount = 0;
   action = NULL;

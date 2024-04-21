@@ -14,7 +14,6 @@
 
 DWORD WINAPI Execute(LPVOID lpParam) {
   Action *a = (Action*)lpParam;
-  printf("[debug] = LUA COMMAND: %s\n", a->command);
   LuaPcall(a->command);
   return 0;
 }
