@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <windows.h>
+#include <winuser.h>
 #include "action.h"
 
 #define WM_TRAYICON (WM_USER + 1)
@@ -53,8 +54,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           PostQuitMessage(0);
           break;
         case IDM_RELOAD:
-          ActionReload();
-          fflush(stdout);
+          if (!ActionReload() || InvalidActionsCount() > 0) {
+            MessageBox(hwnd, "Lua script with errors", "Error", MB_OK | MB_ICONERROR);
+            ShellExecute(NULL, "open", "notepad.exe", "automata.log", NULL, SW_SHOWDEFAULT);
+          }
           break;
         case IDM_LOG:
           fflush(stdout);

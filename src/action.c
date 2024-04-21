@@ -19,11 +19,20 @@ void FreeActions(void) {
   action = NULL;
 }
 
-void ActionReload(void) {
-  printf("[info]= Automata reloading...\n");
+size_t InvalidActionsCount(void) {
+  size_t count = 0;
+  for (size_t i = 0; i < actionCount; i++) {
+    if (!action[i].valid) count++;
+  }
+
+  return count;
+}
+
+bool ActionReload(void) {
+  printf("[Info]= reloading...\n");
   FreeActions();
   LuaClose();
-  LuaInitState();
+  bool isStateValid = LuaInitState();
   ActionSetup();
-  printf("[info]= Automata reloaded.\n");
+  return isStateValid;
 }
