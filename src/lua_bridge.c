@@ -240,6 +240,9 @@ Action* LuaSetupActions(size_t *size) {
 
   *size = lua_rawlen(L, -1);
   Action* action = (Action*)malloc(*size * sizeof(Action));
+  action->pressedKey[0] = 0;
+  action->pressedKey[1] = 0;
+  action->pressedKey[2] = 0;
 
   for (int i = 0; i < *size; i++) {
     action[i].valid = false;
@@ -251,12 +254,30 @@ Action* LuaSetupActions(size_t *size) {
     }
 
     lua_getfield(L, -1, "keycode");
-    if (!lua_isnumber(L, -1)) {
-      printf("Error: element %d with invalid keycode\n", i);
+    if (!lua_istable(L, -1)) {
+      printf("Error: element %d with invalid keycode sequence\n", i);
       lua_pop(L, 2);
       continue;
     }
-    action[i].pressedKey = lua_tonumber(L, -1);
+
+    int keycodeSize = lua_rawlen(L, -1);
+    if (keycodeSize > KEYCODE_MAX_SIZE)
+      keycodeSize = KEYCODE_MAX_SIZE;
+
+    for (int j = 0; j < keycodeSize; j++) {
+      lua_pushnumber(L, j + 1);
+      lua_gettable(L, -2);
+
+      if (!lua_isnumber(L, -1)) {
+        printf("[Error]= Invalid keycode at %d, element index=%d\n", i, j);
+        lua_pop(L, 1);
+        // TODO: ERROR HANDLING
+        break;
+      }
+
+      action[i].pressedKey[j] = lua_tonumber(L, -1);
+      lua_pop(L, 1);
+    }
     lua_pop(L, 1);
 
     lua_getfield(L, -1, "action");
