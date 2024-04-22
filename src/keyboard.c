@@ -15,9 +15,6 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
       printf("Key pressed: %lu\n", kbdStruct->vkCode);
       for (unsigned int i = 0; i < actionCount; i++) {
         if (action[i].valid && kbdStruct->vkCode == action[i].pressedKey[0]) {
-          for (int i = 0; i < KEYCODE_MAX_SIZE; i ++) {
-            printf("keycode value i=%d, value=%lu", i, action[i].pressedKey[0]);
-          }
           HANDLE hThread = CreateThread(NULL, 0, CommandRoutine, &action[i], 0, NULL);
           if (hThread == NULL) {
             printf("[Error]: Failed to run action.\n");

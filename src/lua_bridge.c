@@ -240,9 +240,6 @@ Action* LuaSetupActions(size_t *size) {
 
   *size = lua_rawlen(L, -1);
   Action* action = (Action*)malloc(*size * sizeof(Action));
-  action->pressedKey[0] = 0;
-  action->pressedKey[1] = 0;
-  action->pressedKey[2] = 0;
 
   for (int i = 0; i < *size; i++) {
     action[i].valid = false;
@@ -261,17 +258,21 @@ Action* LuaSetupActions(size_t *size) {
     }
 
     int keycodeSize = lua_rawlen(L, -1);
-    if (keycodeSize > KEYCODE_MAX_SIZE)
-      keycodeSize = KEYCODE_MAX_SIZE;
 
-    for (int j = 0; j < keycodeSize; j++) {
+    int invalidKeycode = -1;
+    for (int j = 0; j < KEYCODE_MAX_SIZE; j++) {
+      if (j >= keycodeSize) {
+        action[i].pressedKey[j] = 0;
+        continue;
+      }
+
       lua_pushnumber(L, j + 1);
       lua_gettable(L, -2);
 
       if (!lua_isnumber(L, -1)) {
         printf("[Error]= Invalid keycode at %d, element index=%d\n", i, j);
         lua_pop(L, 1);
-        // TODO: ERROR HANDLING
+        invalidKeycode = j;
         break;
       }
 
@@ -280,16 +281,22 @@ Action* LuaSetupActions(size_t *size) {
     }
     lua_pop(L, 1);
 
+    if (invalidKeycode != -1) {
+      printf("[Error]= element %d with invalid keycode sequence at index=%d\n", i, invalidKeycode);
+      lua_pop(L, 1);
+      continue;
+    }
+
     lua_getfield(L, -1, "action");
     if (!lua_isstring(L, -1)) {
-      printf("Error: element %d action must be a string\n", i);
+      printf("[Error]= element %d action must be a string\n", i);
       lua_pop(L, 2);
       continue;
     }
 
     const char* command = lua_tostring(L, -1);
     if (strlen(command) >= CMD_MAX_SIZE) {
-      printf("Error: element %d action name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
+      printf("[Error]= element %d action name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
       lua_pop(L, 2);
       continue;
     }
