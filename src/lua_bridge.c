@@ -258,11 +258,12 @@ Action* LuaSetupActions(size_t *size) {
     }
 
     int keycodeSize = lua_rawlen(L, -1);
+    action[i].keycodeSize = min(keycodeSize, KEYCODE_MAX_SIZE);
 
     int invalidKeycode = -1;
     for (int j = 0; j < KEYCODE_MAX_SIZE; j++) {
       if (j >= keycodeSize) {
-        action[i].pressedKey[j] = 0;
+        action[i].keycode[j] = 0;
         continue;
       }
 
@@ -276,7 +277,7 @@ Action* LuaSetupActions(size_t *size) {
         break;
       }
 
-      action[i].pressedKey[j] = lua_tonumber(L, -1);
+      action[i].keycode[j] = lua_tonumber(L, -1);
       lua_pop(L, 1);
     }
     lua_pop(L, 1);

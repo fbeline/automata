@@ -7,6 +7,7 @@
 
 typedef struct action {
   char command[CMD_MAX_SIZE];
-  unsigned long pressedKey[KEYCODE_MAX_SIZE];
+  unsigned long keycode[KEYCODE_MAX_SIZE];
+  unsigned short keycodeSize;
   bool valid;
 } Action;

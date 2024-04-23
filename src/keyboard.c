@@ -5,35 +5,43 @@
 #include "types.h"
 
 static HHOOK keyboardHook;
-
 static LPTHREAD_START_ROUTINE CommandRoutine;
+
+static Action* lastAction = NULL;
+static bool shouldExecuteAction = true;
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode >= 0) {
-    if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
-      KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
-      printf("Key pressed: %lu\n", kbdStruct->vkCode);
+    KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
+    if (lastAction != NULL && wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
+      if (kbdStruct->vkCode == lastAction->keycode[lastAction->keycodeSize - 1]) {
+        shouldExecuteAction = true;
+      }
+    } else if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
+      /* printf("Key pressed: %lu\n", kbdStruct->vkCode); */
       for (size_t i = 0; i < actionCount; i++) {
         if (!action[i].valid) continue;
 
-        bool match[3] = {false, false, false};
-        for (size_t j = 0; j < 3; j++) {
-          printf("TESTING I=%zu J=%zu, %lu\n", i, j, action[i].pressedKey[j]);
-          // TODO FIX IT
-          if (action[i].pressedKey[j] == 0 ||
-            GetAsyncKeyState(action[i].pressedKey[j]) & 0x8000) {
-            match[j] = true;
-            continue;
-          } 
+        bool match = true;
+        DWORD lastKeycodeIdx = action[i].keycodeSize - 1;
+
+        for (size_t j = 0; j < action[i].keycodeSize; j++) {
+          if (j == lastKeycodeIdx && kbdStruct->vkCode != action[i].keycode[j]) {
+            match = false;
+          } else if (j != lastKeycodeIdx && !(GetAsyncKeyState(action[i].keycode[j]) & 0x8000)) {
+            match = false;
+            break;
+          }
         }
 
-        if (match[0] == true && match[1] == true && match[2] == true) {
-          printf("HERE WE GO");
+        if (match && shouldExecuteAction) {
+          lastAction = &action[i];
+          shouldExecuteAction = false;
           HANDLE hThread = CreateThread(NULL, 0, CommandRoutine, &action[i], 0, NULL);
           if (hThread == NULL) {
             printf("[Error]: Failed to run action.\n");
-            return 1;
-          } 
+            break;
+          }
           CloseHandle(hThread);
         }
       }
