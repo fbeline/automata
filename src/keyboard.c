@@ -13,8 +13,22 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
       KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
       printf("Key pressed: %lu\n", kbdStruct->vkCode);
-      for (unsigned int i = 0; i < actionCount; i++) {
-        if (action[i].valid && kbdStruct->vkCode == action[i].pressedKey[0]) {
+      for (size_t i = 0; i < actionCount; i++) {
+        if (!action[i].valid) continue;
+
+        bool match[3] = {false, false, false};
+        for (size_t j = 0; j < 3; j++) {
+          printf("TESTING I=%zu J=%zu, %lu\n", i, j, action[i].pressedKey[j]);
+          // TODO FIX IT
+          if (action[i].pressedKey[j] == 0 ||
+            GetAsyncKeyState(action[i].pressedKey[j]) & 0x8000) {
+            match[j] = true;
+            continue;
+          } 
+        }
+
+        if (match[0] == true && match[1] == true && match[2] == true) {
+          printf("HERE WE GO");
           HANDLE hThread = CreateThread(NULL, 0, CommandRoutine, &action[i], 0, NULL);
           if (hThread == NULL) {
             printf("[Error]: Failed to run action.\n");
