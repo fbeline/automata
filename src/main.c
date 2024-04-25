@@ -6,6 +6,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+#include "log.h"
 #include "types.h"
 #include "action.h"
 #include "ui.h"
@@ -19,24 +20,17 @@ DWORD WINAPI Execute(LPVOID lpParam) {
 }
 
 int main(int argc, char *argv[]) {
-  /* FILE* logFile = freopen("automata.log", "a", stdout); */
-  /* if (logFile == NULL) { */
-  /*   printf("Error opening log file."); */
-  /*   return 1; */
-  /* } */
-
+  LogInit("automata.log");
   LuaInitState();
   ActionSetup();
   KeyboardHookSetup(Execute);
-
-  fflush(stdout);
 
   UiStart();
 
   FreeActions();
   KeyboardUnhook();
   LuaClose();
-  /* fclose(logFile); */
+  LogClose();
 
   return 0;
 }

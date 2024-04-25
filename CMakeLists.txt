@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(automata 
   src/main.c
   src/types.h
+  src/log.c src/log.h
   src/action.c src/action.h
   src/keyboard.c src/keyboard.h
   src/lua_bridge.c src/lua_bridge.h

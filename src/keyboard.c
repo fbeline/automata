@@ -1,6 +1,7 @@
 #include "keyboard.h"
 
 #include <stdio.h>
+#include "log.h"
 #include "action.h"
 #include "types.h"
 
@@ -18,7 +19,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         shouldExecuteAction = true;
       }
     } else if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
-      /* printf("Key pressed: %lu\n", kbdStruct->vkCode); */
+      Log(LOG_INFO, "Key pressed: %lu", kbdStruct->vkCode);
       for (size_t i = 0; i < actionCount; i++) {
         if (!action[i].valid) continue;
 
@@ -39,7 +40,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
           shouldExecuteAction = false;
           HANDLE hThread = CreateThread(NULL, 0, CommandRoutine, &action[i], 0, NULL);
           if (hThread == NULL) {
-            printf("[Error]: Failed to run action.\n");
+            Log(LOG_ERROR, "Failed to run action.");
             break;
           }
           CloseHandle(hThread);
@@ -71,7 +72,7 @@ void ReleaseKey(WORD keyCode) {
 void KeyboardHookSetup(LPTHREAD_START_ROUTINE commandRoutine) {
   keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
   if (keyboardHook == NULL) {
-    printf("Failed to set keyboard hook\n");
+    Log(LOG_ERROR, "Failed to set keyboard hook");
     exit(1);
   }
 

@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <winuser.h>
 #include <string.h>
+#include "log.h"
 #include "keyboard.h"
 
 #define DECLARE_KEYCODE(L, keycode) \
@@ -215,7 +216,7 @@ bool LuaInitState(void) {
 
   luaL_openlibs(L);
   if (luaL_dofile(L, "test.lua") != LUA_OK) {
-    printf("[Error]= %s\n", lua_tostring(L, -1));
+    Log(LOG_ERROR, lua_tostring(L, -1));
     lua_close(L);
     L = NULL;
     return false;
@@ -223,7 +224,7 @@ bool LuaInitState(void) {
 
   lua_getglobal(L, "actions");
   if (!lua_istable(L, -1)) {
-    printf("[Error]= Missing 'actions' definition.");
+    Log(LOG_WARNING, "Missing 'actions' definition.");
     lua_close(L);
     L = NULL;
     return false;
@@ -245,14 +246,14 @@ Action* LuaSetupActions(size_t *size) {
     action[i].valid = false;
     lua_rawgeti(L, -1, i + 1);
     if (!lua_istable(L, -1)) {
-      printf("Error: element %d is not a table\n", i);
+      Log(LOG_ERROR, "element %d is not a table", i);
       lua_pop(L, 1);
       continue;
     }
 
     lua_getfield(L, -1, "keycode");
     if (!lua_istable(L, -1)) {
-      printf("Error: element %d with invalid keycode sequence\n", i);
+      Log(LOG_ERROR, "element %d with invalid keycode sequence", i);
       lua_pop(L, 2);
       continue;
     }
@@ -271,7 +272,7 @@ Action* LuaSetupActions(size_t *size) {
       lua_gettable(L, -2);
 
       if (!lua_isnumber(L, -1)) {
-        printf("[Error]= Invalid keycode at %d, element index=%d\n", i, j);
+        Log(LOG_ERROR,"Invalid keycode at %d, element %d", i, j);
         lua_pop(L, 1);
         invalidKeycode = j;
         break;
@@ -283,21 +284,21 @@ Action* LuaSetupActions(size_t *size) {
     lua_pop(L, 1);
 
     if (invalidKeycode != -1) {
-      printf("[Error]= element %d with invalid keycode sequence at index=%d\n", i, invalidKeycode);
+      Log(LOG_ERROR, "element %d with invalid keycode sequence at index=%d", i, invalidKeycode);
       lua_pop(L, 1);
       continue;
     }
 
     lua_getfield(L, -1, "action");
     if (!lua_isstring(L, -1)) {
-      printf("[Error]= element %d action must be a string\n", i);
+      Log(LOG_ERROR, "element %d action must be a string", i);
       lua_pop(L, 2);
       continue;
     }
 
     const char* command = lua_tostring(L, -1);
     if (strlen(command) >= CMD_MAX_SIZE) {
-      printf("[Error]= element %d action name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
+      Log(LOG_ERROR, "element %d action name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
       lua_pop(L, 2);
       continue;
     }
@@ -314,10 +315,10 @@ Action* LuaSetupActions(size_t *size) {
 void LuaPcall(const char* fnName) {
   lua_getglobal(L, fnName);
   if (lua_isfunction(L, -1)) {
-    printf("[Info]= Executing %s...\n", fnName);
+    Log(LOG_INFO, "Executing %s...", fnName);
     lua_pcall(L, 0, 0, 0);
   } else {
-    printf("[Error]= Command not found: %s\n", fnName);
+    Log(LOG_WARNING, "Command not found: %s", fnName);
   }
 }
 

@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "log.h"
 #include "lua_bridge.h"
 
 Action *action;
@@ -29,7 +30,7 @@ size_t InvalidActionsCount(void) {
 }
 
 bool ActionReload(void) {
-  printf("[Info]= reloading...\n");
+  Log(LOG_INFO, "Reloading...\n");
   FreeActions();
   LuaClose();
   bool isStateValid = LuaInitState();
