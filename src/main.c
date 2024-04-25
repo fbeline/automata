@@ -1,4 +1,6 @@
-#include <stdio.h>
+#define _CRT_SECURE_NO_WARNINGS 1 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 1 
+
 #include <stdbool.h>
 #include <Windows.h>
 #include <winuser.h>

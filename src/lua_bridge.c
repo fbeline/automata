@@ -10,34 +10,13 @@
 #include <lauxlib.h>
 #include "log.h"
 #include "keyboard.h"
+#include "fs.h"
 
 #define DECLARE_KEYCODE(L, keycode) \
   lua_pushnumber(L, keycode); \
   lua_setglobal(L, #keycode);
 
 lua_State* L;
-
-static char* AppDataPath() {
-  char* appDataPath = NULL;
-  size_t len;
-
-  if (_dupenv_s(&appDataPath, &len, "APPDATA") != 0 || appDataPath == NULL) {
-    return NULL;
-  }
-
-  size_t totalLen = len + strlen("\\Automata") + 1;
-  char* programDataPath = (char*)realloc(appDataPath, totalLen);
-  if (programDataPath == NULL) {
-    free(appDataPath);
-    return NULL;
-  }
-  if (strcat_s(programDataPath + len - 1, totalLen - len + 1, "\\automata") != 0) {
-    free(programDataPath);
-    return NULL;
-  }
-
-  return programDataPath; 
-}
 
 static int LuaWait(lua_State* L) {
   lua_Number n = lua_tonumber(L, -1);
@@ -233,21 +212,14 @@ static void DeclareGlobals(void) {
 }
 
 bool LuaInitState(void) {
-  char *appDataPath = AppDataPath();
-  if (appDataPath == NULL) {
-    Log(LOG_ERROR, "Failed to retrieve %APPDATA% path");
-    return false;
-  }
-
-  char* scriptName = "\\automata.lua";
-  char* scriptPath = realloc(appDataPath, strlen(appDataPath) + strlen(scriptName) + 1);
-  strcat(scriptPath, scriptName);
+  char path[MAX_PATH_LENGTH];
+  AppDataPath(path);
+  strcat(path, "\\automata.lua");
 
   L = luaL_newstate();
   DeclareGlobals();
   luaL_openlibs(L);
-  if (luaL_dofile(L, scriptPath) != LUA_OK) {
-    free(scriptPath);
+  if (luaL_dofile(L, path) != LUA_OK) {
     Log(LOG_ERROR, lua_tostring(L, -1));
     lua_close(L);
     L = NULL;
@@ -256,14 +228,12 @@ bool LuaInitState(void) {
 
   lua_getglobal(L, "actions");
   if (!lua_istable(L, -1)) {
-    free(scriptPath);
     Log(LOG_WARNING, "Missing 'actions' definition.");
     lua_close(L);
     L = NULL;
     return false;
   }
 
-  free(scriptPath);
   return true;
 }
 
