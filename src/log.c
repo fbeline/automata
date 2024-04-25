@@ -5,13 +5,17 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
+#include "fs.h"
 
 #define LOG_MAX_LEN 1024
 
 FILE *logFile;
 
-void LogInit(const char *filename) {
-  if (fopen_s(&logFile, filename, "a") != 0) {
+void LogInit(void) {
+  char path[MAX_PATH_LENGTH];
+  AppDataPath(path);
+  strcat(path, "//automata.log");
+  if (fopen_s(&logFile, path, "a") != 0) {
     perror("Error opening log file");
     exit(EXIT_FAILURE);
   }

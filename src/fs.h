@@ -5,7 +5,7 @@
 #define MAX_PATH_LENGTH 256
 
 typedef struct fileInfo {
-  char cName[260];
+  char cName[MAX_PATH_LENGTH];
   time_t tCreationTime;
   unsigned long long nFileSize;
 } FileInfo;

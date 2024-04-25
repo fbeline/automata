@@ -6,7 +6,7 @@ typedef enum {
     LOG_ERROR
 } LogLevel;
 
-void LogInit(const char *filename);
+void LogInit(void);
 
 void Log(LogLevel level, const char *format,...);
 

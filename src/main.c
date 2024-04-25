@@ -22,7 +22,7 @@ DWORD WINAPI Execute(LPVOID lpParam) {
 }
 
 int main(int argc, char *argv[]) {
-  LogInit("automata.log");
+  LogInit();
   LuaInitState();
   ActionSetup();
   KeyboardHookSetup(Execute);

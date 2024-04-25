@@ -56,12 +56,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case IDM_RELOAD:
           if (!ActionReload() || InvalidActionsCount() > 0) {
             MessageBox(hwnd, "Lua script with errors", "Error", MB_OK | MB_ICONERROR);
-            ShellExecute(NULL, "open", "notepad.exe", "automata.log", NULL, SW_SHOWDEFAULT);
           }
           break;
         case IDM_LOG:
-          fflush(stdout);
-          ShellExecute(NULL, "open", "notepad.exe", "automata.log", NULL, SW_SHOWDEFAULT);
+          // TODO
           break;
       }
       break;
