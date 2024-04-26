@@ -4,12 +4,14 @@
 #include <windows.h>
 #include <winuser.h>
 #include "action.h"
+#include "fs.h"
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAYICON 1
 #define IDM_EXIT 1001
 #define IDM_RELOAD 1002
 #define IDM_LOG 1003
+#define IDM_SCRIPTS 1004
 
 HWND hwndGlobal;
 NOTIFYICONDATA nid;
@@ -37,6 +39,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           POINT pt;
           GetCursorPos(&pt);
           HMENU hMenu = CreatePopupMenu();
+          HMENU sMenu = CreatePopupMenu();
+
+          // SCRIPTS TODO: load selected script
+          char path[MAX_PATH];
+          AppDataPath(path);
+          strcat(path, "\\*.lua");
+          int fileCount;
+          FileInfo** files = ListFiles(path, &fileCount);
+          for (int i = 0; i < fileCount; i++) {
+            AppendMenu(sMenu, MF_STRING, 3, files[i]->cName); // MF_STRING | MF_CHECKED
+          }
+
+          // MENUS
+          AppendMenu(hMenu, MF_POPUP, (UINT_PTR)sMenu, "Scripts");
           AppendMenu(hMenu, MF_STRING, IDM_RELOAD, "Reload");
           AppendMenu(hMenu, MF_STRING, IDM_LOG, "Log");
           AppendMenu(hMenu, MF_STRING, IDM_EXIT, "Exit");
@@ -60,6 +76,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           break;
         case IDM_LOG:
           // TODO
+          break;
+        case IDM_SCRIPTS:
           break;
       }
       break;

@@ -3,13 +3,10 @@
 
 #include <stdbool.h>
 #include <Windows.h>
-#include <winuser.h>
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
 
 #include "log.h"
 #include "types.h"
+#include "fs.h"
 #include "action.h"
 #include "ui.h"
 #include "keyboard.h"
@@ -21,7 +18,17 @@ DWORD WINAPI Execute(LPVOID lpParam) {
   return 0;
 }
 
+void CreateDataFolder(void) {
+  char path[MAX_PATH_LENGTH];
+  AppDataPath(path);
+  if (CreateDirectory(path, NULL) == 0 && GetLastError() != ERROR_ALREADY_EXISTS) {
+    Log(LOG_ERROR, "Failed to create directory %s", path);
+    exit(1);
+  }
+}
+
 int main(int argc, char *argv[]) {
+  CreateDataFolder();
   LogInit();
   LuaInitState();
   ActionSetup();
