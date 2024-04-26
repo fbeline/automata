@@ -11,7 +11,7 @@ time_t FileTimeToTimeT(const FILETIME* ft) {
   return (time_t)((ull.QuadPart - 116444736000000000ULL) / 10000000ULL);
 }
 
-FileInfo** ListFiles(const char* dir, int *size) {
+FileInfo** ListFiles(const char* dir, size_t *size) {
   *size = 0;
   WIN32_FIND_DATA findFileData;
   HANDLE hFind;

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <winuser.h>
+#include "log.h"
 #include "action.h"
 #include "fs.h"
 
@@ -11,10 +12,39 @@
 #define IDM_EXIT 1001
 #define IDM_RELOAD 1002
 #define IDM_LOG 1003
-#define IDM_SCRIPTS 1004
+#define IDM_SCRIPTS 3000
 
 HWND hwndGlobal;
 NOTIFYICONDATA nid;
+
+static FileInfo** scripts = NULL;
+static size_t sCount = 0;
+static size_t sId = 0;
+
+static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
+  WORD param = LOWORD(wParam); 
+
+  if (param >= IDM_SCRIPTS) {
+    sId = param - IDM_SCRIPTS;
+    param = IDM_RELOAD;
+  }
+
+  switch (param) {
+    case IDM_EXIT:
+      PostQuitMessage(0);
+      break;
+    case IDM_RELOAD:
+      if (sCount == 0) {
+        Log(LOG_WARNING, "No avaiable lua scripts found");
+      } else if (!ActionReload(scripts[sId]->cName) || InvalidActionsCount() > 0) {
+        MessageBox(hwnd, "Lua script with errors", "Error", MB_OK | MB_ICONERROR);
+      }
+      break;
+    case IDM_LOG:
+      // TODO
+      break;
+  }
+}
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
@@ -41,14 +71,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
           HMENU hMenu = CreatePopupMenu();
           HMENU sMenu = CreatePopupMenu();
 
-          // SCRIPTS TODO: load selected script
+          if (scripts != NULL) free(scripts);
           char path[MAX_PATH];
           AppDataPath(path);
           strcat(path, "\\*.lua");
-          int fileCount;
-          FileInfo** files = ListFiles(path, &fileCount);
-          for (int i = 0; i < fileCount; i++) {
-            AppendMenu(sMenu, MF_STRING, 3, files[i]->cName); // MF_STRING | MF_CHECKED
+          scripts = ListFiles(path, &sCount);
+          for (int i = 0; i < sCount; i++) {
+            UINT uFlags = i == sId ? MF_STRING | MF_CHECKED : MF_STRING;
+            AppendMenu(sMenu, uFlags, IDM_SCRIPTS + i, scripts[i]->cName); // MF_STRING | MF_CHECKED
           }
 
           // MENUS
@@ -65,21 +95,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
     // handle command
     case WM_COMMAND:
-      switch (LOWORD(wParam)) {
-        case IDM_EXIT:
-          PostQuitMessage(0);
-          break;
-        case IDM_RELOAD:
-          if (!ActionReload() || InvalidActionsCount() > 0) {
-            MessageBox(hwnd, "Lua script with errors", "Error", MB_OK | MB_ICONERROR);
-          }
-          break;
-        case IDM_LOG:
-          // TODO
-          break;
-        case IDM_SCRIPTS:
-          break;
-      }
+      ExecuteCommand(hwnd, wParam);
       break;
 
     case WM_DESTROY:

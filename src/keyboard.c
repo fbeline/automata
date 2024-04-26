@@ -19,7 +19,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         shouldExecuteAction = true;
       }
     } else if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
-      Log(LOG_INFO, "Key pressed: %lu", kbdStruct->vkCode);
+      printf("Key pressed: %lu\n", kbdStruct->vkCode);
       for (size_t i = 0; i < actionCount; i++) {
         if (!action[i].valid) continue;
 

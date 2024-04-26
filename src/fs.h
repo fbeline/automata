@@ -10,6 +10,6 @@ typedef struct fileInfo {
   unsigned long long nFileSize;
 } FileInfo;
 
-FileInfo** ListFiles(const char* dir, int *size);
+FileInfo** ListFiles(const char* dir, size_t *size);
 
 void AppDataPath(char path[MAX_PATH_LENGTH]);

@@ -211,10 +211,11 @@ static void DeclareGlobals(void) {
   DECLARE_KEYCODE(L,VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT);
 }
 
-bool LuaInitState(void) {
-  char path[MAX_PATH_LENGTH];
+bool LuaInitState(const char *script) {
+  char path[MAX_PATH];
   AppDataPath(path);
-  strcat(path, "\\automata.lua");
+  strcat(path, "\\");
+  strcat(path, script);
 
   L = luaL_newstate();
   DeclareGlobals();

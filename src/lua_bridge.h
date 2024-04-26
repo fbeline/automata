@@ -1,10 +1,10 @@
 #pragma once
 
+#include <stdbool.h>
 #include <lua.h>
 #include "types.h"
-#include <stdbool.h>
 
-bool LuaInitState(void);
+bool LuaInitState(const char *script);
 
 Action* LuaSetupActions(size_t *size);
 

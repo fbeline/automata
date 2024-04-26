@@ -29,11 +29,11 @@ size_t InvalidActionsCount(void) {
   return count;
 }
 
-bool ActionReload(void) {
-  Log(LOG_INFO, "Reloading...\n");
+bool ActionReload(const char *script) {
+  Log(LOG_INFO, "Loading script=%s", script);
   FreeActions();
   LuaClose();
-  bool isStateValid = LuaInitState();
+  bool isStateValid = LuaInitState(script);
   ActionSetup();
   return isStateValid;
 }

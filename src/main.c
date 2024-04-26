@@ -30,7 +30,7 @@ void CreateDataFolder(void) {
 int main(int argc, char *argv[]) {
   CreateDataFolder();
   LogInit();
-  LuaInitState();
+  LuaInitState("automata.lua");
   ActionSetup();
   KeyboardHookSetup(Execute);
 

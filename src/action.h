@@ -12,4 +12,4 @@ size_t InvalidActionsCount(void);
 
 void FreeActions(void);
 
-bool ActionReload(void);
+bool ActionReload(const char *script);
