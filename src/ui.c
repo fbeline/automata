@@ -46,54 +46,54 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
   }
 }
 
+static void OpenTrayMenu(HWND hwnd) {
+  POINT pt;
+  GetCursorPos(&pt);
+  HMENU hMenu = CreatePopupMenu();
+  HMENU sMenu = CreatePopupMenu();
+
+  if (scripts != NULL) free(scripts);
+  char path[MAX_PATH];
+  AppDataPath(path);
+  strcat(path,"\\*.lua");
+  scripts = ListFiles(path, &sCount);
+  for (int i = 0; i < sCount; i++) {
+    UINT uFlags = i == sId ? MF_STRING | MF_CHECKED : MF_STRING;
+    AppendMenu(sMenu, uFlags, IDM_SCRIPTS + i, scripts[i]->cName); // MF_STRING | MF_CHECKED
+  }
+
+  // MENUS
+  AppendMenu(hMenu, MF_POPUP, (UINT_PTR)sMenu, "Scripts");
+  AppendMenu(hMenu, MF_STRING, IDM_RELOAD, "Reload");
+  AppendMenu(hMenu, MF_STRING, IDM_LOG, "Log");
+  AppendMenu(hMenu, MF_STRING, IDM_EXIT, "Exit");
+  SetForegroundWindow(hwnd);
+  TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
+  DestroyMenu(hMenu);
+}
+
+static void CreateTrayIcon(HWND hwnd) {
+  nid.cbSize = sizeof(NOTIFYICONDATA);
+  nid.hWnd = hwnd;
+  nid.uID = ID_TRAYICON;
+  nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+  nid.uCallbackMessage = WM_TRAYICON;
+  nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+  strcpy_s(nid.szTip, 9, "Automata");
+
+  Shell_NotifyIcon(NIM_ADD, &nid);
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
     case WM_CREATE:
-      // Set up the NOTIFYICONDATA structure
-      nid.cbSize = sizeof(NOTIFYICONDATA);
-      nid.hWnd = hwnd;
-      nid.uID = ID_TRAYICON;
-      nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-      nid.uCallbackMessage = WM_TRAYICON;
-      nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-      strcpy_s(nid.szTip, 9, "Automata");
-
-      // Add the icon to the system tray
-      Shell_NotifyIcon(NIM_ADD, &nid);
+      CreateTrayIcon(hwnd);
       break;
 
     case WM_TRAYICON:
-      // Handle tray icon events
-      switch (lParam) {
-        case WM_RBUTTONUP:
-          POINT pt;
-          GetCursorPos(&pt);
-          HMENU hMenu = CreatePopupMenu();
-          HMENU sMenu = CreatePopupMenu();
-
-          if (scripts != NULL) free(scripts);
-          char path[MAX_PATH];
-          AppDataPath(path);
-          strcat(path, "\\*.lua");
-          scripts = ListFiles(path, &sCount);
-          for (int i = 0; i < sCount; i++) {
-            UINT uFlags = i == sId ? MF_STRING | MF_CHECKED : MF_STRING;
-            AppendMenu(sMenu, uFlags, IDM_SCRIPTS + i, scripts[i]->cName); // MF_STRING | MF_CHECKED
-          }
-
-          // MENUS
-          AppendMenu(hMenu, MF_POPUP, (UINT_PTR)sMenu, "Scripts");
-          AppendMenu(hMenu, MF_STRING, IDM_RELOAD, "Reload");
-          AppendMenu(hMenu, MF_STRING, IDM_LOG, "Log");
-          AppendMenu(hMenu, MF_STRING, IDM_EXIT, "Exit");
-          SetForegroundWindow(hwnd);
-          TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
-          DestroyMenu(hMenu);
-          break; 
-      }
+      if (lParam == WM_RBUTTONUP) OpenTrayMenu(hwnd);
       break;
 
-    // handle command
     case WM_COMMAND:
       ExecuteCommand(hwnd, wParam);
       break;
