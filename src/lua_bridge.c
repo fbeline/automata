@@ -214,8 +214,8 @@ static void DeclareGlobals(void) {
 bool LuaInitState(const char *script) {
   char path[MAX_PATH];
   AppDataPath(path);
-  strcat(path, "\\");
-  strcat(path, script);
+  strcat_s(path, MAX_PATH, "\\");
+  strcat_s(path, MAX_PATH, script);
 
   L = luaL_newstate();
   DeclareGlobals();

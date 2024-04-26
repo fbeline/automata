@@ -42,7 +42,7 @@ FileInfo** ListFiles(const char* dir, size_t *size) {
       perror("Memory allocation failed");
       exit(EXIT_FAILURE);
     }
-    strcpy(files[*size]->cName, findFileData.cFileName);
+    strcpy_s(files[*size]->cName, MAX_PATH, findFileData.cFileName);
     files[*size]->nFileSize = (unsigned long long)findFileData.nFileSizeHigh << 32 | findFileData.nFileSizeLow;
     files[*size]->tCreationTime = FileTimeToTimeT(&findFileData.ftLastWriteTime);
 
@@ -54,7 +54,7 @@ FileInfo** ListFiles(const char* dir, size_t *size) {
   return files;
 }
 
-void AppDataPath(char path[MAX_PATH_LENGTH]) {
-  strcpy(path, getenv("APPDATA"));
-  strcat(path, "\\Automata");
+void AppDataPath(char path[MAX_PATH]) {
+  strcpy_s(path, MAX_PATH, getenv("APPDATA"));
+  strcat_s(path, MAX_PATH, "\\Automata");
 }

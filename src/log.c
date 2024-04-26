@@ -12,11 +12,11 @@
 FILE *logFile;
 
 void LogInit(void) {
-  char path[MAX_PATH_LENGTH];
+  char path[MAX_PATH];
   AppDataPath(path);
-  strcat(path, "//automata.log");
+  strcat_s(path, MAX_PATH, "//automata.log");
   if (fopen_s(&logFile, path, "a") != 0) {
-    perror("Error opening log file");
+    Log(LOG_ERROR, "Error opening log file");
     exit(EXIT_FAILURE);
   }
 }

@@ -55,7 +55,7 @@ static void OpenTrayMenu(HWND hwnd) {
   if (scripts != NULL) free(scripts);
   char path[MAX_PATH];
   AppDataPath(path);
-  strcat(path,"\\*.lua");
+  strcat_s(path, MAX_PATH, "\\*.lua");
   scripts = ListFiles(path, &sCount);
   for (int i = 0; i < sCount; i++) {
     UINT uFlags = i == sId ? MF_STRING | MF_CHECKED : MF_STRING;

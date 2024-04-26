@@ -2,14 +2,14 @@
 
 #include <time.h>
 
-#define MAX_PATH_LENGTH 256
+#define MAX_PATH 260
 
 typedef struct fileInfo {
-  char cName[MAX_PATH_LENGTH];
+  char cName[MAX_PATH];
   time_t tCreationTime;
   unsigned long long nFileSize;
 } FileInfo;
 
 FileInfo** ListFiles(const char* dir, size_t *size);
 
-void AppDataPath(char path[MAX_PATH_LENGTH]);
+void AppDataPath(char path[MAX_PATH]);

@@ -20,7 +20,7 @@ DWORD WINAPI Execute(LPVOID lpParam) {
 }
 
 void CreateDataFolder(void) {
-  char path[MAX_PATH_LENGTH];
+  char path[MAX_PATH];
   AppDataPath(path);
   if (CreateDirectory(path, NULL) == 0 && GetLastError() != ERROR_ALREADY_EXISTS) {
     Log(LOG_ERROR, "Failed to create directory %s", path);
