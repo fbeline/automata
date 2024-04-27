@@ -321,7 +321,10 @@ void LuaPcall(const char* fnName) {
   lua_getglobal(L, fnName);
   if (lua_isfunction(L, -1)) {
     Log(LOG_INFO, "Executing %s...", fnName);
-    lua_pcall(L, 0, 0, 0);
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+      Log(LOG_ERROR, lua_tostring(L, -1));
+      lua_pop(L, 1);
+    }
   } else {
     Log(LOG_WARNING, "Command not found: %s", fnName);
   }
