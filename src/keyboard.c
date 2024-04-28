@@ -8,18 +8,17 @@
 static HHOOK keyboardHook;
 static LPTHREAD_START_ROUTINE CommandRoutine;
 
-static Action* lastAction = NULL;
+static DWORD lastActionKeycode = 0;
 static bool shouldExecuteAction = true;
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode >= 0) {
     KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
-    if (lastAction != NULL && wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
-      if (kbdStruct->vkCode == lastAction->keycode[lastAction->keycodeSize - 1]) {
+    if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
+      if (kbdStruct->vkCode == lastActionKeycode) {
         shouldExecuteAction = true;
       }
     } else if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
-      printf("Key pressed: %lu\n", kbdStruct->vkCode);
       for (size_t i = 0; i < actionCount; i++) {
         if (!action[i].valid) continue;
 
@@ -36,7 +35,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         }
 
         if (match && shouldExecuteAction) {
-          lastAction = &action[i];
+          lastActionKeycode = action[i].keycode[action[i].keycodeSize - 1];
           shouldExecuteAction = false;
           HANDLE hThread = CreateThread(NULL, 0, CommandRoutine, &action[i], 0, NULL);
           if (hThread == NULL) {

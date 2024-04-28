@@ -240,6 +240,7 @@ bool LuaInitState(const char *script) {
 
 Action* LuaSetupActions(size_t *size) {
   if (L == NULL) {
+    Log(LOG_WARNING, "Lua State is NULL");
     *size = 0;
     return NULL;
   }
@@ -251,14 +252,14 @@ Action* LuaSetupActions(size_t *size) {
     action[i].valid = false;
     lua_rawgeti(L, -1, i + 1);
     if (!lua_istable(L, -1)) {
-      Log(LOG_ERROR, "element %d is not a table", i);
+      Log(LOG_ERROR, "Action %d is not a table", i);
       lua_pop(L, 1);
       continue;
     }
 
     lua_getfield(L, -1, "keycode");
     if (!lua_istable(L, -1)) {
-      Log(LOG_ERROR, "element %d with invalid keycode sequence", i);
+      Log(LOG_ERROR, "Action %d with invalid keycode sequence", i);
       lua_pop(L, 2);
       continue;
     }
@@ -277,7 +278,7 @@ Action* LuaSetupActions(size_t *size) {
       lua_gettable(L, -2);
 
       if (!lua_isnumber(L, -1)) {
-        Log(LOG_ERROR,"Invalid keycode at %d, element %d", i, j);
+        Log(LOG_ERROR,"Action %d with invalid keycode at index=%d, ", j, i);
         lua_pop(L, 1);
         invalidKeycode = j;
         break;
@@ -289,21 +290,21 @@ Action* LuaSetupActions(size_t *size) {
     lua_pop(L, 1);
 
     if (invalidKeycode != -1) {
-      Log(LOG_ERROR, "element %d with invalid keycode sequence at index=%d", i, invalidKeycode);
+      Log(LOG_ERROR, "Action %d with invalid keycode sequence at index=%d", i, invalidKeycode);
       lua_pop(L, 1);
       continue;
     }
 
     lua_getfield(L, -1, "action");
     if (!lua_isstring(L, -1)) {
-      Log(LOG_ERROR, "element %d action must be a string", i);
+      Log(LOG_ERROR, "Action %d must be a string", i);
       lua_pop(L, 2);
       continue;
     }
 
     const char* command = lua_tostring(L, -1);
     if (strlen(command) >= CMD_MAX_SIZE) {
-      Log(LOG_ERROR, "element %d action name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
+      Log(LOG_ERROR, "Action %d name is longer than %d.\n", i, CMD_MAX_SIZE - 1);
       lua_pop(L, 2);
       continue;
     }
@@ -318,6 +319,11 @@ Action* LuaSetupActions(size_t *size) {
 }
 
 void LuaPcall(const char* fnName) {
+  if (L == NULL) {
+    Log(LOG_WARNING, "[LuaPcall] Lua State is NULL.");
+    return;
+  }
+    
   lua_getglobal(L, fnName);
   if (lua_isfunction(L, -1)) {
     Log(LOG_INFO, "Executing %s...", fnName);
@@ -334,5 +340,6 @@ void LuaClose(void) {
   if (L == NULL) return;
 
   lua_close(L);
+  L = NULL;
 }
 
