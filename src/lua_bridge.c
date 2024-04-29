@@ -34,6 +34,7 @@ static int LuaWait(lua_State* L) {
 
 static int LuaPressKey(lua_State* L) {
   if (L == NULL) return 1;
+
   if (!lua_isnumber(L, -1)) {
     Log(LOG_ERROR, "press_key param must be a number");
     lua_pop(L, 1);
@@ -46,6 +47,7 @@ static int LuaPressKey(lua_State* L) {
 
 static int LuaReleaseKey(lua_State* L) {
   if (L == NULL) return 1;
+
   if (!lua_isnumber(L, -1)) {
     Log(LOG_ERROR, "release_key param must be a number");
     lua_pop(L, 1);
@@ -58,6 +60,7 @@ static int LuaReleaseKey(lua_State* L) {
 
 static int LuaWrite(lua_State* L) {
   if (L == NULL) return 1;
+
   if (!lua_isstring(L, -1)) {
     Log(LOG_ERROR, "Write param must be a string");
     lua_pop(L, 1);
@@ -70,6 +73,8 @@ static int LuaWrite(lua_State* L) {
 }
 
 static void DeclareGlobals(void) {
+  if (L == NULL) return;
+
   lua_pushcfunction(L, LuaWait);
   lua_setglobal(L, "wait");
 

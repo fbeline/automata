@@ -43,6 +43,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             break;
           }
           CloseHandle(hThread);
+          return 1;
         }
       }
     }
