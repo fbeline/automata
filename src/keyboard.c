@@ -68,6 +68,17 @@ void ReleaseKey(WORD keyCode) {
   SendInput(1, &input, sizeof(INPUT));
 }
 
+void KeyboardWrite(const char *txt) {
+  if (txt == NULL) return;
+  size_t len = strlen(txt);
+  for (size_t i = 0; i < len; i++) {
+    WORD keyCode = VkKeyScan(txt[i]);
+    PressKey(keyCode);
+    Sleep(10);
+    ReleaseKey(keyCode);
+  }
+}
+
 void KeyboardHookSetup(LPTHREAD_START_ROUTINE commandRoutine) {
   keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
   if (keyboardHook == NULL) {

@@ -19,27 +19,57 @@
 lua_State* L;
 
 static int LuaWait(lua_State* L) {
+  if (L == NULL) return 1;
+
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "wait param must be a number");
+    lua_pop(L, 1);
+    return 1;
+  }
+
   lua_Number n = lua_tonumber(L, -1);
   Sleep(n);
   return 0;
 }
 
 static int LuaPressKey(lua_State* L) {
+  if (L == NULL) return 1;
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "press_key param must be a number");
+    lua_pop(L, 1);
+    return 1;
+  }
   lua_Number keyCode = lua_tonumber(L, -1);
   PressKey(keyCode);
   return 0;
 }
 
 static int LuaReleaseKey(lua_State* L) {
+  if (L == NULL) return 1;
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "release_key param must be a number");
+    lua_pop(L, 1);
+    return 1;
+  }
   lua_Number keyCode = lua_tonumber(L, -1);
   ReleaseKey(keyCode);
   return 0;
 }
 
-static void DeclareGlobals(void) {
-  lua_pushnumber(L, VK_F5);
-  lua_setglobal(L, "VK_F5");
+static int LuaWrite(lua_State* L) {
+  if (L == NULL) return 1;
+  if (!lua_isstring(L, -1)) {
+    Log(LOG_ERROR, "Write param must be a string");
+    lua_pop(L, 1);
+    return 1;
+  }
+  const char* str = lua_tostring(L, -1);
+  KeyboardWrite(str);
 
+  return 0;
+}
+
+static void DeclareGlobals(void) {
   lua_pushcfunction(L, LuaWait);
   lua_setglobal(L, "wait");
 
@@ -48,6 +78,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaReleaseKey);
   lua_setglobal(L, "release_key");
+
+  lua_pushcfunction(L, LuaWrite);
+  lua_setglobal(L, "write");
 
   DECLARE_KEYCODE(L,VK_LBUTTON);
   DECLARE_KEYCODE(L,VK_RBUTTON);
@@ -323,7 +356,7 @@ void LuaPcall(const char* fnName) {
     Log(LOG_WARNING, "[LuaPcall] Lua State is NULL.");
     return;
   }
-    
+
   lua_getglobal(L, fnName);
   if (lua_isfunction(L, -1)) {
     Log(LOG_INFO, "Executing %s...", fnName);
