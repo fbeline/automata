@@ -1,5 +1,6 @@
 #include "log.h"
 
+#include <corecrt_share.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -9,14 +10,15 @@
 
 #define LOG_MAX_LEN 1024
 
-FILE *logFile;
+FILE *logFile = NULL;
 
 void LogInit(void) {
   char path[MAX_PATH];
-  AppDataPath(path);
+  AppDataPath(path); 
   strcat_s(path, MAX_PATH, "//automata.log");
-  if (fopen_s(&logFile, path, "a") != 0) {
-    Log(LOG_ERROR, "Error opening log file");
+  logFile = _fsopen(path, "a", _SH_DENYNO);
+  if (logFile == NULL) {
+    Log(LOG_ERROR, "Error opening log file"); 
     exit(EXIT_FAILURE);
   }
 }
