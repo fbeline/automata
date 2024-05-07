@@ -41,7 +41,21 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
       }
       break;
     case IDM_LOG:
-      // TODO
+      char logPath[MAX_PATH];
+      AppDataPath(logPath);
+      strcat_s(logPath, MAX_PATH, "//automata.log");
+
+      char cmd[300];
+      strcpy_s(cmd, 300, "-C Get-Content -Wait -Tail 10 ");
+      strcat_s(cmd, 300, logPath);
+
+      ShellExecute(NULL,
+                   "open",
+                   "powershell.exe",
+                   cmd,
+                   NULL,
+                   SW_SHOWNORMAL);
+
       break;
   }
 }
@@ -118,6 +132,8 @@ void UiStart(void) {
 
   HWND hwnd = CreateWindow("MainWindow", "Automata", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
   ShowWindow(hwnd, SW_HIDE);
+
+  Log(LOG_INFO, "Application start.");
 
   MSG msg;
   while (GetMessage(&msg, NULL, 0, 0)) {
