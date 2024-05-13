@@ -8,12 +8,15 @@
 
 static HHOOK keyboardHook;
 static LPTHREAD_START_ROUTINE CommandRoutine;
+bool logPressedKeys = false;
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode < 0 || (wParam != WM_KEYDOWN && wParam != WM_SYSKEYDOWN))
     return CallNextHookEx(keyboardHook, nCode, wParam, lParam);
 
   KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
+
+  if (logPressedKeys) Log(LOG_INFO, "KEY PRESSED=%d", kbdStruct->vkCode, kbdStruct->vkCode);
   for (size_t i = 0; i < actionCount; i++) {
     if (!action[i].valid) continue;
 

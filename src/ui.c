@@ -3,16 +3,19 @@
 #include <stdio.h>
 #include <windows.h>
 #include <winuser.h>
-#include "log.h"
 #include "action.h"
 #include "fs.h"
+#include "keyboard.h"
+#include "log.h"
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAYICON 1
 #define IDM_EXIT 1001
 #define IDM_RELOAD 1002
 #define IDM_LOG 1003
+#define IDM_LOG_PRESSES_KEYS 1004
 #define IDM_SCRIPTS 3000
+
 
 HWND hwndGlobal;
 NOTIFYICONDATA nid;
@@ -39,6 +42,9 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
       } else if (!ActionReload(scripts[sId]->cName) || InvalidActionsCount() > 0) {
         MessageBox(hwnd, "Lua script with errors", "Error", MB_OK | MB_ICONERROR);
       }
+      break;
+    case IDM_LOG_PRESSES_KEYS:
+      logPressedKeys = !logPressedKeys;
       break;
     case IDM_LOG:
       char logPath[MAX_PATH];
@@ -80,6 +86,10 @@ static void OpenTrayMenu(HWND hwnd) {
   AppendMenu(hMenu, MF_POPUP, (UINT_PTR)sMenu, "Scripts");
   AppendMenu(hMenu, MF_STRING, IDM_RELOAD, "Reload");
   AppendMenu(hMenu, MF_STRING, IDM_LOG, "Log");
+
+  UINT pressedKeysFlags = logPressedKeys ? MF_STRING | MF_CHECKED : MF_STRING;
+  AppendMenu(hMenu, pressedKeysFlags, IDM_LOG_PRESSES_KEYS, "Log Pressed Keys");
+
   AppendMenu(hMenu, MF_STRING, IDM_EXIT, "Exit");
   SetForegroundWindow(hwnd);
   TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
