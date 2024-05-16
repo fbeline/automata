@@ -16,7 +16,11 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 
   KBDLLHOOKSTRUCT *kbdStruct = (KBDLLHOOKSTRUCT *)lParam;
 
-  if (logPressedKeys) Log(LOG_INFO, "KEY PRESSED=%d", kbdStruct->vkCode, kbdStruct->vkCode);
+  if (logPressedKeys)
+    Log(LOG_INFO, "KEY PRESSED VK=%d, SCAN=%d",
+        kbdStruct->vkCode,
+        MapVirtualKeyEx(kbdStruct->vkCode, MAPVK_VK_TO_VSC_EX, GetKeyboardLayout(0)));
+
   for (size_t i = 0; i < actionCount; i++) {
     if (!action[i].valid) continue;
 
@@ -55,7 +59,13 @@ void PressKey(WORD keyCode) {
   INPUT input = {0};
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode;
-  input.ki.dwFlags = 0;
+  input.ki.wScan = MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, 0);
+
+  // TODO: Fix this to support all extended keys
+  if (keyCode == VK_LEFT || keyCode == VK_DOWN || keyCode == VK_UP)
+    input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+  else
+    input.ki.dwFlags = KEYEVENTF_SCANCODE;
 
   SendInput(1, &input, sizeof(INPUT));
 }
@@ -64,7 +74,13 @@ void ReleaseKey(WORD keyCode) {
   INPUT input = {0};
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode;
-  input.ki.dwFlags = KEYEVENTF_KEYUP;
+  input.ki.wScan = MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, 0);
+
+  if (keyCode == VK_LEFT || keyCode == VK_DOWN || keyCode == VK_UP)
+    input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY;
+  else
+    input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_SCANCODE;
+
 
   SendInput(1, &input, sizeof(INPUT));
 }
@@ -73,6 +89,7 @@ void KeyboardWrite(const char *txt) {
   if (txt == NULL) return;
   size_t len = strlen(txt);
   for (size_t i = 0; i < len; i++) {
+    // TODO: Support capital letters
     WORD keyCode = VkKeyScan(txt[i]);
     PressKey(keyCode);
     Sleep(10);
