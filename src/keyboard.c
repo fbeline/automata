@@ -55,18 +55,24 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   return CallNextHookEx(keyboardHook, nCode, wParam, lParam);
 }
 
+UINT KeyEventFlag(WORD vk) {
+  UINT flag = (vk == VK_LEFT || vk == VK_RIGHT || 
+    vk == VK_UP || vk == VK_DOWN || 
+    vk == VK_PRIOR || vk == VK_NEXT || 
+    vk == VK_END || vk == VK_HOME || 
+    vk == VK_INSERT || vk == VK_DELETE || 
+    vk == VK_DIVIDE || vk == VK_NUMLOCK ||
+    vk == VK_RCONTROL || vk == VK_RMENU) ? KEYEVENTF_EXTENDEDKEY : KEYEVENTF_SCANCODE;
+
+  return flag;
+}
+
 void PressKey(WORD keyCode) {
   INPUT input = {0};
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode;
   input.ki.wScan = MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, 0);
-
-  // TODO: Fix this to support all extended keys
-  if (keyCode == VK_LEFT || keyCode == VK_DOWN || keyCode == VK_UP)
-    input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
-  else
-    input.ki.dwFlags = KEYEVENTF_SCANCODE;
-
+  input.ki.dwFlags = KeyEventFlag(keyCode);
   SendInput(1, &input, sizeof(INPUT));
 }
 
@@ -75,13 +81,7 @@ void ReleaseKey(WORD keyCode) {
   input.type = INPUT_KEYBOARD;
   input.ki.wVk = keyCode;
   input.ki.wScan = MapVirtualKeyEx(keyCode, MAPVK_VK_TO_VSC, 0);
-
-  if (keyCode == VK_LEFT || keyCode == VK_DOWN || keyCode == VK_UP)
-    input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY;
-  else
-    input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_SCANCODE;
-
-
+  input.ki.dwFlags = KEYEVENTF_KEYUP | KeyEventFlag(keyCode);
   SendInput(1, &input, sizeof(INPUT));
 }
 
