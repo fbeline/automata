@@ -66,8 +66,9 @@ static int LuaTapKey(lua_State* L) {
     lua_pop(L, 1);
     return 1;
   }
-  lua_Number keyCode = lua_tonumber(L, -1);
-  TapKey(keyCode, 10);
+  lua_Number kc = lua_tonumber(L, -1);
+  TapKey(kc, 50);
+
   return 0;
 }
 
