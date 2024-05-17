@@ -85,15 +85,18 @@ void ReleaseKey(WORD keyCode) {
   SendInput(1, &input, sizeof(INPUT));
 }
 
+void TapKey(WORD kc, DWORD t) {
+  PressKey(kc);
+  Sleep(t);
+  ReleaseKey(kc);
+}
+
 void KeyboardWrite(const char *txt) {
   if (txt == NULL) return;
   size_t len = strlen(txt);
   for (size_t i = 0; i < len; i++) {
     // TODO: Support capital letters
-    WORD keyCode = VkKeyScan(txt[i]);
-    PressKey(keyCode);
-    Sleep(10);
-    ReleaseKey(keyCode);
+    TapKey(VkKeyScan(txt[i]), 10);
   }
 }
 

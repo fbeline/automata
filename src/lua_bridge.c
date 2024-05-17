@@ -58,6 +58,19 @@ static int LuaReleaseKey(lua_State* L) {
   return 0;
 }
 
+static int LuaTapKey(lua_State* L) {
+  if (L == NULL) return 1;
+
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "tap_key param must be a valid virtual key");
+    lua_pop(L, 1);
+    return 1;
+  }
+  lua_Number keyCode = lua_tonumber(L, -1);
+  TapKey(keyCode, 10);
+  return 0;
+}
+
 static int LuaWrite(lua_State* L) {
   if (L == NULL) return 1;
 
@@ -83,6 +96,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaReleaseKey);
   lua_setglobal(L, "release_key");
+
+  lua_pushcfunction(L, LuaTapKey);
+  lua_setglobal(L, "tap_key");
 
   lua_pushcfunction(L, LuaWrite);
   lua_setglobal(L, "write");

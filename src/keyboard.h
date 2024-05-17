@@ -9,6 +9,8 @@ void PressKey(WORD keyCode);
 
 void ReleaseKey(WORD keyCode);
 
+void TapKey(WORD kc, DWORD t);
+
 void KeyboardWrite(const char *txt);
 
 void KeyboardHookSetup(LPTHREAD_START_ROUTINE commandRoutine);
