@@ -13,6 +13,7 @@ add_executable(automata
   src/log.c src/log.h
   src/action.c src/action.h
   src/keyboard.c src/keyboard.h
+  src/mouse.c src/mouse.h
   src/lua_bridge.c src/lua_bridge.h
   src/ui.c src/ui.h
 )

@@ -10,6 +10,7 @@
 #include <lauxlib.h>
 #include "log.h"
 #include "keyboard.h"
+#include "mouse.h"
 #include "fs.h"
 #include "types.h"
 
@@ -87,6 +88,30 @@ static int LuaWrite(lua_State* L) {
   return 0;
 }
 
+static int LuaMousePressButton(lua_State* L) {
+  if (L == NULL) return 1;
+
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "press_mouse with invalid param");
+    lua_pop(L, 1);
+    return 1;
+  }
+  lua_Number kc = lua_tonumber(L, -1);
+
+  switch ((int)kc)  {
+    case M_LEFT:
+      MouseLeftClick();
+      break;
+    case M_RIGHT:
+      MouseRightClick();
+      break;
+    default:
+      Log(LOG_WARNING, "Invalid mouse button");
+  }
+
+  return 0;
+}
+
 static void DeclareGlobals(void) {
   if (L == NULL) return;
 
@@ -104,6 +129,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaWrite);
   lua_setglobal(L, "write");
+
+  lua_pushcfunction(L, LuaMousePressButton);
+  lua_setglobal(L, "press_mouse");
 
   DECLARE_KEYCODE(L, VK_A);
   DECLARE_KEYCODE(L, VK_B);
@@ -303,6 +331,10 @@ static void DeclareGlobals(void) {
   DECLARE_KEYCODE(L,VK_GAMEPAD_RIGHT_THUMBSTICK_DOWN);
   DECLARE_KEYCODE(L,VK_GAMEPAD_RIGHT_THUMBSTICK_RIGHT);
   DECLARE_KEYCODE(L,VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT);
+
+  // mouse buttons
+  DECLARE_KEYCODE(L, M_LEFT);
+  DECLARE_KEYCODE(L, M_RIGHT);
 }
 
 bool LuaInitState(const char *script) {

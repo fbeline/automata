@@ -50,3 +50,7 @@ typedef struct action {
 #define VK_7 0x37
 #define VK_8 0x38
 #define VK_9 0x39
+
+#define M_LEFT 0
+#define M_RIGHT 1
+
