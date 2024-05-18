@@ -11,10 +11,11 @@
 #include "log.h"
 #include "keyboard.h"
 #include "fs.h"
+#include "types.h"
 
 #define DECLARE_KEYCODE(L, keycode) \
-  lua_pushnumber(L, keycode); \
-  lua_setglobal(L, #keycode);
+lua_pushnumber(L, keycode); \
+lua_setglobal(L, #keycode);
 
 lua_State* L;
 
@@ -103,6 +104,44 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaWrite);
   lua_setglobal(L, "write");
+
+  DECLARE_KEYCODE(L, VK_A);
+  DECLARE_KEYCODE(L, VK_B);
+  DECLARE_KEYCODE(L, VK_C);
+  DECLARE_KEYCODE(L, VK_D);
+  DECLARE_KEYCODE(L, VK_E);
+  DECLARE_KEYCODE(L, VK_F);
+  DECLARE_KEYCODE(L, VK_G);
+  DECLARE_KEYCODE(L, VK_H);
+  DECLARE_KEYCODE(L, VK_I);
+  DECLARE_KEYCODE(L, VK_J);
+  DECLARE_KEYCODE(L, VK_K);
+  DECLARE_KEYCODE(L, VK_L);
+  DECLARE_KEYCODE(L, VK_M);
+  DECLARE_KEYCODE(L, VK_N);
+  DECLARE_KEYCODE(L, VK_O);
+  DECLARE_KEYCODE(L, VK_P);
+  DECLARE_KEYCODE(L, VK_Q);
+  DECLARE_KEYCODE(L, VK_R);
+  DECLARE_KEYCODE(L, VK_S);
+  DECLARE_KEYCODE(L, VK_T);
+  DECLARE_KEYCODE(L, VK_U);
+  DECLARE_KEYCODE(L, VK_V);
+  DECLARE_KEYCODE(L, VK_W);
+  DECLARE_KEYCODE(L, VK_X);
+  DECLARE_KEYCODE(L, VK_Y);
+  DECLARE_KEYCODE(L, VK_Z);
+
+  DECLARE_KEYCODE(L, VK_0);
+  DECLARE_KEYCODE(L, VK_1);
+  DECLARE_KEYCODE(L, VK_2);
+  DECLARE_KEYCODE(L, VK_3);
+  DECLARE_KEYCODE(L, VK_4);
+  DECLARE_KEYCODE(L, VK_5);
+  DECLARE_KEYCODE(L, VK_6);
+  DECLARE_KEYCODE(L, VK_7);
+  DECLARE_KEYCODE(L, VK_8);
+  DECLARE_KEYCODE(L, VK_9);
 
   DECLARE_KEYCODE(L,VK_LBUTTON);
   DECLARE_KEYCODE(L,VK_RBUTTON);
