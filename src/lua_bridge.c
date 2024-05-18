@@ -88,6 +88,27 @@ static int LuaWrite(lua_State* L) {
   return 0;
 }
 
+static int LuaMouseMoveTo(lua_State* L) {
+  if (L == NULL) return 1;
+
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "mouse_move params must be a number");
+    lua_pop(L, 1);
+    return 1;
+  }
+  lua_Number x = lua_tonumber(L, -1);
+
+  if (!lua_isnumber(L, -1)) {
+    Log(LOG_ERROR, "mouse_move params must be a number");
+    lua_pop(L, 2);
+    return 1;
+  }
+  lua_Number y = lua_tonumber(L, -1);
+
+  MouseMoveTo(x, y);
+  return 0;
+}
+
 static int LuaMousePressButton(lua_State* L) {
   if (L == NULL) return 1;
 
@@ -129,6 +150,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaWrite);
   lua_setglobal(L, "write");
+
+  lua_pushcfunction(L, LuaMouseMoveTo);
+  lua_setglobal(L, "mouse_move");
 
   lua_pushcfunction(L, LuaMousePressButton);
   lua_setglobal(L, "press_mouse");
