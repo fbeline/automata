@@ -96,14 +96,16 @@ static int LuaMouseMoveTo(lua_State* L) {
     lua_pop(L, 1);
     return 1;
   }
-  lua_Number x = lua_tonumber(L, -1);
+  lua_Number y = lua_tonumber(L, -1);
+  lua_pop(L, 1);
 
   if (!lua_isnumber(L, -1)) {
     Log(LOG_ERROR, "mouse_move params must be a number");
     lua_pop(L, 2);
     return 1;
   }
-  lua_Number y = lua_tonumber(L, -1);
+  lua_Number x = lua_tonumber(L, -1);
+  lua_pop(L, 1);
 
   MouseMoveTo(x, y);
   return 0;
@@ -133,6 +135,21 @@ static int LuaMousePressButton(lua_State* L) {
   return 0;
 }
 
+static int LuaMousePosition(lua_State *L) {
+  if (L == NULL) return 1;
+
+  POINT p = MousePosition();
+
+  lua_newtable(L);
+
+  lua_pushnumber(L, p.x);
+  lua_setfield(L, -2, "x");
+  lua_pushnumber(L, p.y);
+  lua_setfield(L, -2, "y");
+
+  return 1;
+}
+
 static void DeclareGlobals(void) {
   if (L == NULL) return;
 
@@ -156,6 +173,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaMousePressButton);
   lua_setglobal(L, "press_mouse");
+
+  lua_pushcfunction(L, LuaMousePosition);
+  lua_setglobal(L, "mouse_position");
 
   DECLARE_KEYCODE(L, VK_A);
   DECLARE_KEYCODE(L, VK_B);
