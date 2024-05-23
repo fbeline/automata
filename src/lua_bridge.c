@@ -150,6 +150,23 @@ static int LuaMousePosition(lua_State *L) {
   return 1;
 }
 
+static int Run(lua_State *L) {
+  if (L == NULL) return 1;
+
+  if (!lua_isstring(L, -1)) {
+    Log(LOG_ERROR, "Run param must be a string");
+    lua_pop(L, 1);
+    return 1;
+  }
+  const char* command = lua_tostring(L, -1);
+
+  int result = system(command);
+  Log(LOG_INFO, "Command \"%s\" executed with return status: %d", command, result);
+  lua_pushinteger(L, result);
+
+  return 0;
+}
+
 static void DeclareGlobals(void) {
   if (L == NULL) return;
 
@@ -176,6 +193,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaMousePosition);
   lua_setglobal(L, "mouse_position");
+
+  lua_pushcfunction(L, Run);
+  lua_setglobal(L, "run");
 
   DECLARE_KEYCODE(L, VK_A);
   DECLARE_KEYCODE(L, VK_B);
