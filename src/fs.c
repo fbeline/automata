@@ -1,8 +1,10 @@
 #include "fs.h"
 
+#include <corecrt_share.h>
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
+#include "log.h"
 
 time_t FileTimeToTimeT(const FILETIME *ft) {
   ULARGE_INTEGER ull;
@@ -56,4 +58,26 @@ FileInfo **ListFiles(const char *dir, size_t *size) {
 void AppDataPath(char path[MAX_PATH]) {
   strcpy_s(path, MAX_PATH, getenv("APPDATA"));
   strcat_s(path, MAX_PATH, "\\Automata");
+}
+
+void CreateDefaultLuaScript(void) {
+  char path[MAX_PATH];
+  AppDataPath(path);
+  strcat_s(path, MAX_PATH, "\\default.lua");
+
+  FILE *filePtr;
+  filePtr = _fsopen(path, "r", _SH_DENYNO);
+  if (filePtr != NULL) {
+    fclose(filePtr);
+    return;
+  } 
+
+  filePtr = _fsopen(path, "w", _SH_DENYNO);
+  if (filePtr == NULL) {
+    Log(LOG_ERROR, "Failed to create 'default.lua'");
+    return;
+  }
+
+  fprintf(filePtr, "actions = {}");
+  fclose(filePtr);
 }

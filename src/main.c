@@ -28,9 +28,10 @@ void CreateDataFolder(void) {
 }
 
 int main(int argc, char *argv[]) {
-  CreateDataFolder();
   LogInit();
-  LuaInitState("automata.lua");
+  CreateDataFolder();
+  CreateDefaultLuaScript();
+  LuaInitState("default.lua");
   ActionSetup();
   KeyboardHookSetup(Execute);
 

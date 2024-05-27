@@ -13,3 +13,5 @@ typedef struct fileInfo {
 FileInfo** ListFiles(const char* dir, size_t *size);
 
 void AppDataPath(char path[MAX_PATH]);
+
+void CreateDefaultLuaScript(void);
