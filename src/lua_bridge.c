@@ -437,6 +437,7 @@ Action* LuaSetupActions(size_t *size) {
 
   *size = lua_rawlen(L, -1);
   Action* action = (Action*)malloc(*size * sizeof(Action));
+  if (action == NULL) return NULL;
 
   for (int i = 0; i < *size; i++) {
     action[i].valid = false;
