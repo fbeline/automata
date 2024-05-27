@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <winuser.h>
 #include "action.h"
+#include "config.h"
 #include "fs.h"
 #include "keyboard.h"
 #include "log.h"
@@ -14,8 +15,8 @@
 #define IDM_RELOAD 1002
 #define IDM_LOG 1003
 #define IDM_LOG_PRESSES_KEYS 1004
+#define IDM_START_WITH_WINDOWS 1005
 #define IDM_SCRIPTS 3000
-
 
 HWND hwndGlobal;
 NOTIFYICONDATA nid;
@@ -45,6 +46,9 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
       break;
     case IDM_LOG_PRESSES_KEYS:
       logPressedKeys = !logPressedKeys;
+      break;
+    case IDM_START_WITH_WINDOWS:
+      ToggleStartWithWindows();
       break;
     case IDM_LOG:
       char logPath[MAX_PATH];
@@ -89,6 +93,9 @@ static void OpenTrayMenu(HWND hwnd) {
 
   UINT pressedKeysFlags = logPressedKeys ? MF_STRING | MF_CHECKED : MF_STRING;
   AppendMenu(hMenu, pressedKeysFlags, IDM_LOG_PRESSES_KEYS, "Log Pressed Keys");
+
+  UINT swwFlags = IsStartingWithSystem() ? MF_STRING | MF_CHECKED : MF_STRING;
+  AppendMenu(hMenu, swwFlags, IDM_START_WITH_WINDOWS, "Start with windows");
 
   AppendMenu(hMenu, MF_STRING, IDM_EXIT, "Exit");
   SetForegroundWindow(hwnd);
