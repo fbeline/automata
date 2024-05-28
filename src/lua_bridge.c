@@ -189,7 +189,7 @@ static void DeclareGlobals(void) {
   lua_setglobal(L, "mouse_move");
 
   lua_pushcfunction(L, LuaMousePressButton);
-  lua_setglobal(L, "press_mouse");
+  lua_setglobal(L, "mouse_click");
 
   lua_pushcfunction(L, LuaMousePosition);
   lua_setglobal(L, "mouse_position");
