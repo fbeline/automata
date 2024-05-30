@@ -3,7 +3,8 @@
 #include <stdbool.h>
 #include <Windows.h>
 #include <winuser.h>
-#include "types.h"
+
+#include "action.h"
 
 void PressKey(WORD keyCode);
 

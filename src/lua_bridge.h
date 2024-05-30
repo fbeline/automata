@@ -1,8 +1,9 @@
 #pragma once
 
-#include <stdbool.h>
 #include <lua.h>
-#include "types.h"
+#include <stdbool.h>
+
+#include "action.h"
 
 bool LuaInitState(const char *script);
 

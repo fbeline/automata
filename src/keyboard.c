@@ -2,9 +2,10 @@
 
 #include <stdio.h>
 #include <winuser.h>
-#include "log.h"
+
 #include "action.h"
-#include "types.h"
+#include "keycode.h"
+#include "log.h"
 
 static HHOOK keyboardHook;
 static LPTHREAD_START_ROUTINE CommandRoutine;
@@ -56,15 +57,15 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 }
 
 UINT KeyEventFlag(WORD vk) {
-  UINT flag = (vk == VK_LEFT || vk == VK_RIGHT || 
-    vk == VK_UP || vk == VK_DOWN || 
-    vk == VK_PRIOR || vk == VK_NEXT || 
-    vk == VK_END || vk == VK_HOME || 
-    vk == VK_INSERT || vk == VK_DELETE || 
-    vk == VK_DIVIDE || vk == VK_NUMLOCK ||
-    vk == VK_VOLUME_MUTE || vk == VK_VOLUME_UP || vk == VK_VOLUME_DOWN ||
-    vk == VK_MEDIA_NEXT_TRACK || vk == VK_MEDIA_PREV_TRACK || vk == VK_MEDIA_PLAY_PAUSE ||
-    vk == VK_RCONTROL || vk == VK_RMENU) ? KEYEVENTF_EXTENDEDKEY : KEYEVENTF_SCANCODE;
+  UINT flag = (vk == KC_LEFT || vk == KC_RIGHT || 
+    vk == KC_UP || vk == KC_DOWN || 
+    vk == KC_PRIOR || vk == KC_NEXT || 
+    vk == KC_END || vk == KC_HOME || 
+    vk == KC_INSERT || vk == KC_DELETE || 
+    vk == KC_DIVIDE || vk == KC_NUMLOCK ||
+    vk == KC_VOLUME_MUTE || vk == KC_VOLUME_UP || vk == KC_VOLUME_DOWN ||
+    vk == KC_MEDIA_NEXT_TRACK || vk == KC_MEDIA_PREV_TRACK || vk == KC_MEDIA_PLAY_PAUSE ||
+    vk == KC_RCONTROL || vk == KC_RMENU) ? KEYEVENTF_EXTENDEDKEY : KEYEVENTF_SCANCODE;
 
   return flag;
 }

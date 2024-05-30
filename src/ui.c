@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <winuser.h>
-#include "action.h"
+
 #include "config.h"
 #include "fs.h"
 #include "keyboard.h"

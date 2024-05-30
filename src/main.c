@@ -4,13 +4,12 @@
 #include <stdbool.h>
 #include <Windows.h>
 
-#include "log.h"
-#include "types.h"
-#include "fs.h"
 #include "action.h"
-#include "ui.h"
+#include "fs.h"
 #include "keyboard.h"
+#include "log.h"
 #include "lua_bridge.h"
+#include "ui.h"
 
 DWORD WINAPI Execute(LPVOID lpParam) {
   Action *a = (Action*)lpParam;
