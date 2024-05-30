@@ -63,6 +63,7 @@ UINT KeyEventFlag(WORD vk) {
     vk == VK_INSERT || vk == VK_DELETE || 
     vk == VK_DIVIDE || vk == VK_NUMLOCK ||
     vk == VK_VOLUME_MUTE || vk == VK_VOLUME_UP || vk == VK_VOLUME_DOWN ||
+    vk == VK_MEDIA_NEXT_TRACK || vk == VK_MEDIA_PREV_TRACK || vk == VK_MEDIA_PLAY_PAUSE ||
     vk == VK_RCONTROL || vk == VK_RMENU) ? KEYEVENTF_EXTENDEDKEY : KEYEVENTF_SCANCODE;
 
   return flag;
