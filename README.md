@@ -20,8 +20,8 @@ function open_cmd()
 end
 
 actions = {
-  { keycode = { VK_CONTROL, VK_F1 }, action = "hello_world" },
-  { keycode = { VK_CONTROL, VK_MENU, VK_T }, action = "open_cmd" },
+  { keycode = { KC_CONTROL, KC_F1 }, action = "hello_world" },
+  { keycode = { KC_CONTROL, KC_MENU, KC_T }, action = "open_cmd" },
 }
 ```
 

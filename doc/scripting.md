@@ -3,6 +3,8 @@
 Follows the list of available functions exposed to LUA in order to automate
 keyboard and mouse actions.
 
+[List of available keycodes](../src/keycode.h)
+
 ## press_key
 **Description**: Simulates pressing a specified key.
 
@@ -15,7 +17,7 @@ press_key(key)
 
 **Example**:
 ```lua
-press_key(VK_F1)
+press_key(KC_F1)
 ```
 
 ## release_key
@@ -31,7 +33,7 @@ release_key(key)
 
 **Example**:
 ```lua
-release_key(VK_CONTROL)
+release_key(KC_CONTROL)
 ```
 
 ## tap_key
@@ -47,7 +49,7 @@ tap_key(key)
 
 **Example**:
 ```lua
-tap_key(VK_A)
+tap_key(KC_A)
 ```
 
 ## write
