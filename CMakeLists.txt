@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(automata 
   src/main.c
-  src/types.h src/keycode.h
+  src/keycode.h
   src/config.c src/config.h
   src/fs.c src/fs.h
   src/log.c src/log.h

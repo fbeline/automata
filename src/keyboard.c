@@ -56,18 +56,12 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   return CallNextHookEx(keyboardHook, nCode, wParam, lParam);
 }
 
-UINT KeyEventFlag(WORD vk) {
-  UINT flag = (vk == KC_LEFT || vk == KC_RIGHT || 
-    vk == KC_UP || vk == KC_DOWN || 
-    vk == KC_PRIOR || vk == KC_NEXT || 
-    vk == KC_END || vk == KC_HOME || 
-    vk == KC_INSERT || vk == KC_DELETE || 
-    vk == KC_DIVIDE || vk == KC_NUMLOCK ||
-    vk == KC_VOLUME_MUTE || vk == KC_VOLUME_UP || vk == KC_VOLUME_DOWN ||
-    vk == KC_MEDIA_NEXT_TRACK || vk == KC_MEDIA_PREV_TRACK || vk == KC_MEDIA_PLAY_PAUSE ||
-    vk == KC_RCONTROL || vk == KC_RMENU) ? KEYEVENTF_EXTENDEDKEY : KEYEVENTF_SCANCODE;
+UINT KeyEventFlag(WORD kc) {
+  for (unsigned int i = 0; i < EXTENDED_KEYS_SIZE; i++) {
+    if (kc == ((int[]){EXTENDED_KEYS})[i]) return KEYEVENTF_EXTENDEDKEY;
+  }
 
-  return flag;
+  return KEYEVENTF_SCANCODE;
 }
 
 void PressKey(WORD keyCode) {
