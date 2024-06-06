@@ -118,14 +118,19 @@ mouse_click(M_LEFT)
 
 **Syntax**:
 ```lua
-run(program)
+run(working_dir, command)
+
+run(command)
 ```
 
 **Parameters**:
+- `working_dir` (string) **OPTIONAL**: The working directory to command execution
 - `program` (string): The external program to be executed.
 
 **Example**:
 ```LUA
+run("C:\\Users", "powershell.exe")
+
 run("notepad.exe")
 ```
 
