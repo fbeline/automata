@@ -25,6 +25,15 @@ actions = {
 }
 ```
 
+# Quick Start
+
+- Double-click to open `automata.exe`.
+- Create a new Lua file or use the `default.lua` located in `$HOME\AppData\Roaming\Automata\`.
+- The script file must contain at least an empty table named `actions` to be valid.
+- Click on the tray icon to open the menu and select the script you want to load.
+- If you modify an existing script, click on `reload` to apply the changes.
+- For debugging, click on `log`.
+
 # Build
 
 - MSVC
