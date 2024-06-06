@@ -12,6 +12,7 @@ add_executable(automata
   src/config.c src/config.h
   src/fs.c src/fs.h
   src/log.c src/log.h
+  src/process.c src/process.h
   src/action.c src/action.h
   src/keyboard.c src/keyboard.h
   src/mouse.c src/mouse.h

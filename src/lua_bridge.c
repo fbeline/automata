@@ -10,10 +10,11 @@
 #include <winuser.h>
 
 #include "fs.h"
-#include "log.h"
 #include "keyboard.h"
 #include "keycode.h"
+#include "log.h"
 #include "mouse.h"
+#include "process.h"
 
 #define DECLARE_KEYCODE(L, keycode) \
 lua_pushnumber(L, keycode); \
@@ -151,7 +152,7 @@ static int LuaMousePosition(lua_State *L) {
   return 1;
 }
 
-static int Run(lua_State *L) {
+static int LuaRun(lua_State *L) {
   if (L == NULL) return 1;
 
   if (!lua_isstring(L, -1)) {
@@ -160,9 +161,18 @@ static int Run(lua_State *L) {
     return 1;
   }
   const char* command = lua_tostring(L, -1);
+  lua_pop(L, 1);
 
-  int result = system(command);
-  Log(LOG_INFO, "Command \"%s\" executed with return status: %d", command, result);
+  const char* workingDir = NULL;
+  if (lua_isstring(L, -1)) {
+    workingDir = lua_tostring(L, -1);
+  }
+  lua_pop(L, 1);
+
+  Log(LOG_INFO, "WORKING DIR %s", workingDir);
+
+  int result = Run(command, workingDir);
+  Log(LOG_INFO, "Command \"%s\" executed; status=%d", command, result);
   lua_pushinteger(L, result);
 
   return 0;
@@ -195,7 +205,7 @@ static void DeclareGlobals(void) {
   lua_pushcfunction(L, LuaMousePosition);
   lua_setglobal(L, "mouse_position");
 
-  lua_pushcfunction(L, Run);
+  lua_pushcfunction(L, LuaRun);
   lua_setglobal(L, "run");
 
   DECLARE_KEYCODE(L, KC_A);
