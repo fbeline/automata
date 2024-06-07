@@ -13,7 +13,7 @@ keyboard and mouse actions.
 press_key(key)
 ```
 **Parameters**:
-- `key`: [Windows Virtual-Key Code](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)
+- `key`: [keycodes](../src/keycode.h)
 
 **Example**:
 ```lua
@@ -29,7 +29,7 @@ release_key(key)
 ```
 
 **Parameters**:
-- `key`: [Windows Virtual-Key Code](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)
+- `key`: [keycodes](../src/keycode.h)
 
 **Example**:
 ```lua
@@ -45,7 +45,7 @@ tap_key(key)
 ```
 
 **Parameters**:
-- `key`: [Windows Virtual-Key Code](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)
+- `key`: [keycodes](../src/keycode.h)
 
 **Example**:
 ```lua
@@ -119,13 +119,17 @@ mouse_click(M_LEFT)
 **Syntax**:
 ```lua
 run(working_dir, command)
-
+-- or
 run(command)
 ```
 
 **Parameters**:
 - `working_dir` (string) **OPTIONAL**: The working directory to command execution
 - `program` (string): The external program to be executed.
+
+**Returns**:
+- 0: success
+- 1: error
 
 **Example**:
 ```LUA
