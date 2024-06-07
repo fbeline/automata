@@ -109,7 +109,7 @@ static void CreateTrayIcon(HWND hwnd) {
   nid.uID = ID_TRAYICON;
   nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
   nid.uCallbackMessage = WM_TRAYICON;
-  nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+  nid.hIcon = (HICON)LoadImage(NULL, "automata.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
   strcpy_s(nid.szTip, 9, "Automata");
 
   Shell_NotifyIcon(NIM_ADD, &nid);
