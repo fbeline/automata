@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.24)
-project(automata)
 set(CMAKE_C_STANDARD 99)
+
+project(automata
+  VERSION 0.1.0
+  DESCRIPTION "Automation tool for Windows"
+  HOMEPAGE_URL "https://github.com/fbeline/automata")
 
 find_package(Lua REQUIRED)
 
