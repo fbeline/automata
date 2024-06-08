@@ -29,10 +29,18 @@ actions = {
 
 - Double-click to open `automata.exe`.
 - Create a new Lua file or use the `default.lua` located in `$HOME\AppData\Roaming\Automata\`.
-- The script file must contain at least an empty table named `actions` to be valid.
 - Click on the tray icon to open the menu and select the script you want to load.
-- If you modify an existing script, click on `reload` to apply the changes.
-- For debugging, click on `log`.
+
+# UI
+
+![ui](https://github.com/fbeline/automata/assets/5730881/39e1affb-cd3e-402b-b1ae-daeb413e7a94)
+
+1. **Scripts**: List of available scripts.
+1. **Reload**: Reloads the active script to apply any changes.
+1. **Log**: Shows the most recent log entries.
+1. **Log Pressed Keys**: Logs every pressed key, useful for debugging.
+1. **Start with windows**: Launches Automata when the computer starts.
+1. **Exit**: Exit the application.
 
 # Build
 
