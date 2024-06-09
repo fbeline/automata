@@ -92,8 +92,13 @@ void KeyboardWrite(const char *txt) {
   if (txt == NULL) return;
   size_t len = strlen(txt);
   for (size_t i = 0; i < len; i++) {
-    // TODO: Support capital letters
-    TapKey(VkKeyScan(txt[i]), 10);
+    if (txt[i] >= 'A' && txt[i] <= 'Z') {
+      PressKey(KC_LSHIFT);
+      TapKey(VkKeyScan(txt[i] + 32), 10);
+      ReleaseKey(KC_LSHIFT);
+    } else {
+      TapKey(VkKeyScan(txt[i]), 10);
+    }
   }
 }
 
