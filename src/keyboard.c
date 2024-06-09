@@ -7,9 +7,50 @@
 #include "keycode.h"
 #include "log.h"
 
+#define DUAL_KEY_SIZE 20
+
 static HHOOK keyboardHook;
 static LPTHREAD_START_ROUTINE CommandRoutine;
 bool logPressedKeys = false;
+
+typedef struct {
+  char ch2;
+  char ch1;
+} DualKey;
+
+// QWERTY dual keys mapping
+// TODO: add support for other layouts
+const DualKey dkMap[DUAL_KEY_SIZE] = {
+  {'!', '1'},
+  {'@', '2'},
+  {'#', '3'},
+  {'$', '4'},
+  {'%', '5'},
+  {'^', '6'},
+  {'&', '7'},
+  {'*', '8'},
+  {'(', '9'},
+  {')', '0'},
+  {'_', '-'},
+  {'+', '='},
+  {'{', '['},
+  {'}', ']'},
+  {':', ';'},
+  {'"', '\''},
+  {'<', ','},
+  {'>', '.'},
+  {'?', '/'},
+  {'|', '\\'},
+};
+
+char FirstKeyOf(char ch2) {
+  for (int i = 0; i < DUAL_KEY_SIZE; i++) {
+    if (ch2 == dkMap[i].ch2) {
+      return dkMap[i].ch1;
+    }
+  }
+  return 0;
+}
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
   if (nCode < 0 || (wParam != WM_KEYDOWN && wParam != WM_SYSKEYDOWN))
@@ -90,11 +131,16 @@ void TapKey(WORD kc, DWORD t) {
 
 void KeyboardWrite(const char *txt) {
   if (txt == NULL) return;
+  char fcVal = 0;
   size_t len = strlen(txt);
   for (size_t i = 0; i < len; i++) {
     if (txt[i] >= 'A' && txt[i] <= 'Z') {
       PressKey(KC_LSHIFT);
       TapKey(VkKeyScan(txt[i] + 32), 10);
+      ReleaseKey(KC_LSHIFT);
+    } else if ((fcVal = FirstKeyOf(txt[i])) > 0) {
+      PressKey(KC_LSHIFT);
+      TapKey(VkKeyScan(fcVal), 10);
       ReleaseKey(KC_LSHIFT);
     } else {
       TapKey(VkKeyScan(txt[i]), 10);

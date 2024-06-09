@@ -55,6 +55,9 @@ tap_key(KC_A)
 ## write
 **Description**: Simulates typing a string of text.
 
+**WARNING: This function fully supports QWERTY keyboards. You may face errors 
+with dual keys symbols on other layouts**
+
 **Syntax**:
 ```lua
 write(text)
