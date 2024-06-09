@@ -73,7 +73,8 @@ write("hello world")
 
 **Syntax**:
 ```lua
-x, y = mouse_position()
+pos = mouse_position()
+-- pos = {x, y}
 ```
 
 **Returns**:

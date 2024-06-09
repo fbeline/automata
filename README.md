@@ -1,26 +1,47 @@
 # Automata
+Powerful windows automation tool for advanced users.
+
+
 Automata is designed to efficiently handle keyboard and mouse input tasks through scripting.
- Developed entirely in C, it ensures high performance and minimal resource usage, with no reliance on external libraries or dependencies.
+It ensures high performance and minimal resource usage, with no reliance on external libraries or dependencies.
 
 ## Scripting with LUA
-Users can write scripts in LUA to define sequences of keyboard and mouse actions.
- The scripting interface exposes functions for key presses, key releases, mouse movements, clicks and more.
+The scripting interface exposes functions for key presses, key releases, mouse movements, clicks and more.
 
 Refer to the [scripting documentation](doc/scripting.md) for more details.
 
 ### Example
 
 ```lua
-function hello_world()
-  write("hello world")
+function foo()
+  write("foo")
+end
+
+function bar()
+  tap_key(KC_B)
+  sleep(50)
+
+  press_key(KC_A)
+  sleep(100)
+  release_key(KC_A)
+end
+
+function baz()
+  pos = mouse_position()
+  mouse_move(pos.x + 100, pos.y + 50)
+  mouse_click(M_LEFT)
 end
 
 function open_cmd()
   run("powershell.exe")
+  -- also accepts working directory
+  -- run("C:\\Users", "powershell.exe")
 end
 
 actions = {
-  { keycode = { KC_CONTROL, KC_F1 }, action = "hello_world" },
+  { keycode = { KC_CONTROL, KC_F1 }, action = "foo" },
+  { keycode = { KC_F2 }, action = "bar" },
+  { keycode = { KC_F3 }, action = "baz" },
   { keycode = { KC_CONTROL, KC_MENU, KC_T }, action = "open_cmd" },
 }
 ```
