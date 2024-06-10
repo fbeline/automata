@@ -169,8 +169,6 @@ static int LuaRun(lua_State *L) {
   }
   lua_pop(L, 1);
 
-  Log(LOG_INFO, "WORKING DIR %s", workingDir);
-
   int result = Run(command, workingDir);
   Log(LOG_INFO, "Command \"%s\" executed; status=%d", command, result);
   lua_pushinteger(L, result);
