@@ -66,7 +66,7 @@ actions = {
 
 # Build
 
-- MSVC
+- CLang
 - CMake
 - Ninja
 - vcpkg; `.\vcpkg install lua:x64-windows-static`
