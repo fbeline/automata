@@ -69,6 +69,15 @@ actions = {
 - CLang
 - CMake
 - Ninja
-- vcpkg; `.\vcpkg install lua:x64-windows-static`
+- vcpkg; 
 
-Now you should be able to execute `run.bat`
+```bash
+# install lua
+vcpkg install lua:x64-windows-static
+
+# create build folder 
+cmake --preset=release
+
+# build
+cmake --build build-release
+```
