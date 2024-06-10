@@ -1,9 +1,10 @@
 # Automata
 Powerful windows automation tool for advanced users.
 
-
 Automata is designed to efficiently handle keyboard and mouse input tasks through scripting.
 It ensures high performance and minimal resource usage, with no reliance on external libraries or dependencies.
+
+*Please be aware that this project is currently in its early stages.*
 
 ## Scripting with LUA
 The scripting interface exposes functions for key presses, key releases, mouse movements, clicks and more.
