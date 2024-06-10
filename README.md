@@ -19,10 +19,10 @@ end
 
 function bar()
   tap_key(KC_B)
-  sleep(50)
+  wait(50)
 
   press_key(KC_A)
-  sleep(100)
+  wait(100)
   release_key(KC_A)
 end
 
