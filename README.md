@@ -10,11 +10,11 @@ It ensures high performance and minimal resource usage, with no reliance on exte
 
 **Minimal Resource Usage**:
 
-Automata is designed to be lightweight and efficient. With a binary size of approximately 300KB and no external dependencies, it's easy to set up and use. The application operates seamlessly in the background, consuming only around 2MB of RAM.
+Automata is designed to be lightweight and efficient. With a binary size of approximately 300KB and no external dependencies. The application operates in the background, consuming around 2MB of RAM.
 
 **Flexibility and Freedom**:
 
-Automata empowers you to write your automation scripts using [Lua](https://www.lua.org/), a free and open-source, full-featured, and battle-tested language. No need to learn a new scripting language or be constrained by limited implementations.
+Automata empowers you to write your automation scripts using [Lua](https://www.lua.org/), a open-source and battle-tested language. No need to learn a new scripting language or be constrained by limited implementations.
 
 ## Scripting with LUA
 The scripting interface exposes functions for key presses, key releases, mouse movements, clicks and more.
@@ -49,6 +49,8 @@ function open_cmd()
   -- run("C:\\Users", "powershell.exe")
 end
 
+-- keyboard hook
+-- press those keys combinations and the action will be triggered
 actions = {
   { keycode = { KC_CONTROL, KC_F1 }, action = "foo" },
   { keycode = { KC_F2 }, action = "bar" },
