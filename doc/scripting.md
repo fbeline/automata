@@ -157,3 +157,22 @@ wait(time)
 ```LUA
 wait(200)
 ```
+
+## message_box
+**Description**: Show a message box.
+
+**Syntax**:
+```lua
+message_box(title, message)
+```
+
+**Parameters**:
+- `title` (string)  : The message box title
+- `message` (string): The message box message.
+
+**Example**:
+```LUA
+message_box("My Title", "hello world!")
+```
+
+

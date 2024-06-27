@@ -15,6 +15,7 @@
 #include "log.h"
 #include "mouse.h"
 #include "process.h"
+#include "ui.h"
 
 #define DECLARE_KEYCODE(L, keycode) \
 lua_pushnumber(L, keycode); \
@@ -176,6 +177,29 @@ static int LuaRun(lua_State *L) {
   return 0;
 }
 
+static int LuaMessageBox(lua_State *L) {
+  if (L == NULL) return 1;
+
+  if (!lua_isstring(L, -1)) {
+    Log(LOG_ERROR, "message_box: message must be a string");
+    lua_pop(L, 1);
+    return 1;
+  }
+  const char* message = lua_tostring(L, -1);
+
+  if (!lua_isstring(L, -2)) {
+    Log(LOG_ERROR, "message_box: title must be a string");
+    lua_pop(L, 1);
+    return 1;
+  }
+  const char* title = lua_tostring(L, -2);
+
+  lua_pop(L, 2);
+
+  ShowMessageBox(title, message);
+  return 0;
+}
+
 static void DeclareGlobals(void) {
   if (L == NULL) return;
 
@@ -202,6 +226,9 @@ static void DeclareGlobals(void) {
 
   lua_pushcfunction(L, LuaMousePosition);
   lua_setglobal(L, "mouse_position");
+
+  lua_pushcfunction(L, LuaMessageBox);
+  lua_setglobal(L, "message_box");
 
   lua_pushcfunction(L, LuaRun);
   lua_setglobal(L, "run");

@@ -25,6 +25,10 @@ static FileInfo** scripts = NULL;
 static size_t sCount = 0;
 static size_t sId = 0;
 
+void ShowMessageBox(const char* title, const char* message) {
+  MessageBox(hwndGlobal, message, title, MB_OK);
+}
+
 static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
   WORD param = LOWORD(wParam); 
 
@@ -147,8 +151,8 @@ void UiStart(void) {
   wc.lpszClassName = "MainWindow";
   RegisterClass(&wc);
 
-  HWND hwnd = CreateWindow("MainWindow", "Automata", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
-  ShowWindow(hwnd, SW_HIDE);
+  HWND hwndGlobal = CreateWindow("MainWindow", "Automata", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
+  ShowWindow(hwndGlobal, SW_HIDE);
 
   Log(LOG_INFO, "Application start.");
 
