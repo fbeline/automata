@@ -1,4 +1,6 @@
+#ifndef _DEBUG
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
 
 #include <stdio.h>
 #include <stdbool.h>
