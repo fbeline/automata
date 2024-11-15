@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_C_STANDARD 99)
 
 project(automata
-  VERSION 0.2.1
+  VERSION 0.2.2
   DESCRIPTION "Automation tool for Windows"
   HOMEPAGE_URL "https://github.com/fbeline/automata")
 
@@ -10,7 +10,7 @@ find_package(Lua REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(RESOURCES resource.rc)
+set(RESOURCES src/resource.h resource.rc)
 
 add_executable(automata 
   src/main.c

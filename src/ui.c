@@ -8,6 +8,7 @@
 #include "fs.h"
 #include "keyboard.h"
 #include "log.h"
+#include "resource.h"
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAYICON 1
@@ -115,7 +116,10 @@ static void CreateTrayIcon(HWND hwnd) {
   nid.uID = ID_TRAYICON;
   nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
   nid.uCallbackMessage = WM_TRAYICON;
-  nid.hIcon = (HICON)LoadImage(NULL, "automata.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
+  nid.hIcon = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR);
+  if (nid.hIcon == NULL) {
+    Log(LOG_ERROR, "Failed to load icon.");
+  }
   strcpy_s(nid.szTip, 9, "Automata");
 
   Shell_NotifyIcon(NIM_ADD, &nid);
