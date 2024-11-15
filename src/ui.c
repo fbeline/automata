@@ -80,7 +80,9 @@ static void OpenTrayMenu(HWND hwnd) {
   HMENU hMenu = CreatePopupMenu();
   HMENU sMenu = CreatePopupMenu();
 
-  if (scripts != NULL) free(scripts);
+  while (scripts != NULL && sCount-- > 0) {
+    free(scripts[sCount]);
+  }
   char path[MAX_PATH];
   AppDataPath(path);
   strcat_s(path, MAX_PATH, "\\*.lua");
