@@ -23,7 +23,7 @@ int ListScripts(ScriptArray scripts, size_t *size) {
 
   do {
     if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
-    if (*size >= MAX_SCRIPTS) {
+    if (*size + 1 >= MAX_SCRIPTS) {
       Log(LOG_WARNING, "Max of %d scripts reached", MAX_SCRIPTS);
       break;
     }
