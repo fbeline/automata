@@ -6,53 +6,33 @@
 #include <windows.h>
 #include "log.h"
 
-time_t FileTimeToTimeT(const FILETIME *ft) {
-  ULARGE_INTEGER ull;
-  ull.LowPart = ft->dwLowDateTime;
-  ull.HighPart = ft->dwHighDateTime;
-  return (time_t)((ull.QuadPart - 116444736000000000ULL) / 10000000ULL);
-}
-
-FileInfo **ListFiles(const char *dir, size_t *size) {
-  *size = 0;
+int ListScripts(ScriptArray scripts, size_t *size) {
+  char path[MAX_PATH];
   WIN32_FIND_DATA findFileData;
   HANDLE hFind;
+  *size = 0;
 
-  hFind = FindFirstFile(dir, &findFileData);
+  if (AppDataPath(path) != 0) {
+    return 1;
+  }
+  strcat_s(path, MAX_PATH, "\\*.lua");
+
+  hFind = FindFirstFile(path, &findFileData);
   if (hFind == INVALID_HANDLE_VALUE)
-    return NULL;
-
-  int count = 0;
-  do {
-    if (!(findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-      count++;
-  } while (FindNextFile(hFind, &findFileData) != 0);
-
-  FileInfo **files = (FileInfo **)malloc(count * sizeof(FileInfo));
-  FindClose(hFind);
-  if (files == NULL) return NULL;
-
-  hFind = FindFirstFile(dir, &findFileData);
+    return 1;
 
   do {
-    if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-      continue;
-
-    files[*size] = (FileInfo *)malloc(sizeof(FileInfo));
-    if (files[*size] == NULL) {
-      FindClose(hFind);
-      return NULL;
+    if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+    if (*size >= MAX_SCRIPTS) {
+      Log(LOG_WARNING, "Max of %d scripts reached", MAX_SCRIPTS);
+      break;
     }
 
-    strcpy_s(files[*size]->cName, MAX_PATH, findFileData.cFileName);
-    files[*size]->nFileSize = (unsigned long long)findFileData.nFileSizeHigh << 32 | findFileData.nFileSizeLow;
-    files[*size]->tCreationTime = FileTimeToTimeT(&findFileData.ftLastWriteTime);
-
-    *size += 1;
+    strcpy_s(scripts[(*size)++], MAX_PATH, findFileData.cFileName);
   } while (FindNextFile(hFind, &findFileData) != 0);
 
   FindClose(hFind);
-  return files;
+  return 0;
 }
 
 int AppDataPath(char *path) {

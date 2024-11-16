@@ -3,14 +3,11 @@
 #include <time.h>
 
 #define MAX_PATH 260
+#define MAX_SCRIPTS 20
 
-typedef struct fileInfo {
-  char cName[MAX_PATH];
-  time_t tCreationTime;
-  unsigned long long nFileSize;
-} FileInfo;
+typedef char ScriptArray[MAX_SCRIPTS][MAX_PATH];
 
-FileInfo** ListFiles(const char* dir, size_t *size);
+int ListScripts(ScriptArray scripts, size_t *size);
 
 int AppDataPath(char *path);
 

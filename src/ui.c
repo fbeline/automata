@@ -22,7 +22,7 @@
 HWND hwndGlobal;
 NOTIFYICONDATA nid;
 
-static FileInfo** scripts = NULL;
+static ScriptArray scripts;
 static size_t sCount = 0;
 static size_t sId = 0;
 
@@ -45,7 +45,7 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
     case IDM_RELOAD:
       if (sCount == 0) {
         Log(LOG_WARNING, "No avaiable lua scripts found");
-      } else if (!ActionReload(scripts[sId]->cName) || InvalidActionsCount() > 0) {
+      } else if (!ActionReload(scripts[sId]) || InvalidActionsCount() > 0) {
         MessageBox(hwnd, "Lua script with errors", "Error", MB_OK | MB_ICONERROR);
       }
       break;
@@ -76,34 +76,20 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
   }
 }
 
-static void LoadScripts(void) {
-  while (scripts != NULL && sCount-- > 0) {
-    free(scripts[sCount]);
-  }
-  scripts = NULL;
-  char path[MAX_PATH];
-  if (AppDataPath(path) != 0) {
-    Log(LOG_ERROR, "Error getting appdata path");
-    exit(1);
-  }
-  strcat_s(path, MAX_PATH, "\\*.lua");
-  scripts = ListFiles(path, &sCount);
-  if (scripts == NULL) {
-    Log(LOG_ERROR, "Error listing lua scripts");
-    exit(1);
-  }
-}
-
 static void OpenTrayMenu(HWND hwnd) {
   POINT pt;
   GetCursorPos(&pt);
   HMENU hMenu = CreatePopupMenu();
   HMENU sMenu = CreatePopupMenu();
 
-  LoadScripts();
+  if (ListScripts(scripts, &sCount) != 0) {
+    Log(LOG_ERROR, "Failed to list scripts");
+    exit(1);
+  }
+
   for (int i = 0; i < sCount; i++) {
     UINT uFlags = i == sId ? MF_STRING | MF_CHECKED : MF_STRING;
-    AppendMenu(sMenu, uFlags, IDM_SCRIPTS + i, scripts[i]->cName); // MF_STRING | MF_CHECKED
+    AppendMenu(sMenu, uFlags, IDM_SCRIPTS + i, scripts[i]); // MF_STRING | MF_CHECKED
   }
 
   // MENUS
