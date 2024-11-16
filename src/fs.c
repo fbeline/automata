@@ -66,10 +66,10 @@ int AppDataPath(char *path) {
   return 0;
 }
 
-void CreateDefaultLuaScript(void) {
+int CreateDefaultLuaScript(void) {
   char path[MAX_PATH];
   if (AppDataPath(path) != 0) {
-    return;
+    return 1;
   }
   strcat_s(path, MAX_PATH, "\\default.lua");
 
@@ -77,15 +77,16 @@ void CreateDefaultLuaScript(void) {
   filePtr = _fsopen(path, "r", _SH_DENYNO);
   if (filePtr != NULL) {
     fclose(filePtr);
-    return;
-  } 
+    return 0;
+  }
 
   filePtr = _fsopen(path, "w", _SH_DENYNO);
   if (filePtr == NULL) {
     Log(LOG_ERROR, "Failed to create 'default.lua'");
-    return;
+    return 1;
   }
 
   fprintf(filePtr, "actions = {}");
   fclose(filePtr);
+  return 0;
 }

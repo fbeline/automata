@@ -14,4 +14,4 @@ FileInfo** ListFiles(const char* dir, size_t *size);
 
 int AppDataPath(char *path);
 
-void CreateDefaultLuaScript(void);
+int CreateDefaultLuaScript(void);

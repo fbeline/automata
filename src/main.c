@@ -33,8 +33,19 @@ int main(int argc, char *argv[]) {
   CreateDataFolder();
 
   LogInit();
-  CreateDefaultLuaScript();
-  LuaInitState("default.lua");
+
+  if (CreateDefaultLuaScript() != 0) {
+    Log(LOG_ERROR, "Failed to find/create 'default.lua'");
+    LogClose();
+    return 1;
+  }
+
+  if (!LuaInitState("default.lua")) {
+    Log(LOG_ERROR, "Failed to initialize Lua state");
+    LogClose();
+    return 1;
+  }
+
   ActionSetup();
   KeyboardHookSetup(Execute);
 
