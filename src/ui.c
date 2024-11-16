@@ -57,7 +57,8 @@ static void ExecuteCommand(HWND hwnd, WPARAM wParam) {
       break;
     case IDM_LOG:
       char logPath[MAX_PATH];
-      AppDataPath(logPath);
+      if (AppDataPath(logPath) != 0)
+        return;
       strcat_s(logPath, MAX_PATH, "//automata.log");
 
       char cmd[300];
@@ -85,7 +86,10 @@ static void OpenTrayMenu(HWND hwnd) {
     free(scripts[sCount]);
   }
   char path[MAX_PATH];
-  AppDataPath(path);
+  if (AppDataPath(path) != 0) {
+    Log(LOG_ERROR, "Error getting appdata path");
+    return;
+  }
   strcat_s(path, MAX_PATH, "\\*.lua");
   scripts = ListFiles(path, &sCount);
   for (int i = 0; i < sCount; i++) {

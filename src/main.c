@@ -21,8 +21,9 @@ DWORD WINAPI Execute(LPVOID lpParam) {
 
 void CreateDataFolder(void) {
   char path[MAX_PATH];
-  AppDataPath(path);
-  if (!CreateDirectory(path, NULL) && GetLastError() != ERROR_ALREADY_EXISTS) {
+  
+  if (AppDataPath(path) != 0 ||
+    (!CreateDirectory(path, NULL) && GetLastError() != ERROR_ALREADY_EXISTS)) {
     printf("Failed to create directory %s\n", path);
     exit(1);
   }

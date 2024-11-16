@@ -14,7 +14,10 @@ FILE *logFile = NULL;
 
 void LogInit(void) {
   char path[MAX_PATH];
-  AppDataPath(path); 
+  if (AppDataPath(path) != 0) {
+    Log(LOG_ERROR, "Error getting appdata path");
+    exit(EXIT_FAILURE);
+  }
   strcat_s(path, MAX_PATH, "//automata.log");
   logFile = _fsopen(path, "a", _SH_DENYNO);
   if (logFile == NULL) {

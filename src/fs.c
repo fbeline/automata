@@ -55,14 +55,22 @@ FileInfo **ListFiles(const char *dir, size_t *size) {
   return files;
 }
 
-void AppDataPath(char path[MAX_PATH]) {
-  strcpy_s(path, MAX_PATH, getenv("APPDATA"));
+int AppDataPath(char *path) {
+  size_t size;
+  getenv_s(&size, path, MAX_PATH, "APPDATA");
+  if (size == 0) {
+    return 1;
+  }
+
   strcat_s(path, MAX_PATH, "\\Automata");
+  return 0;
 }
 
 void CreateDefaultLuaScript(void) {
   char path[MAX_PATH];
-  AppDataPath(path);
+  if (AppDataPath(path) != 0) {
+    return;
+  }
   strcat_s(path, MAX_PATH, "\\default.lua");
 
   FILE *filePtr;
